@@ -1,36 +1,45 @@
+
+
 // ============ DATA ============
 const subjects = [
+    // ============ 1st semester ============
     { name: "Introduction to Business", code: "510101" },
     { name: "Business Communication & Report Writing", code: "510103" },
     { name: "Business Accounting", code: "510105" },
     { name: "Business Mathematics", code: "510107" },
     { name: "History of Emergence of Independent Bangladesh (In Bangla)", code: "211501" },
+      // ============ 2nd semester ============
     { name: "Principles of Management", code: "510109" },
     { name: "Taxation in Bangladesh", code: "510111" },
     { name: "Computer and Information Technology", code: "510113" },
     { name: "Theory and Practice of Banking", code: "510115" },
     { name: "Micro Economics", code: "510117" },
+      // ============ 3rd semester ============
     { name: "Business Statistics-I", code: "520119" },
     { name: "Organization Behavior", code: "520121" },
     { name: "Legal Environment of Business", code: "520123" },
     { name: "E-Commerce", code: "520125" },
     { name: "Macro Economics", code: "520127" },
+     // ============ 4th semester ============
     { name: "Risk Management & Insurance", code: "520129" },
     { name: "Business Statistics-II", code: "520131" },
     { name: "Human Resource Management", code: "520133" },
     { name: "Export-Import Management", code: "520135" },
     { name: "Supply Chain Management", code: "520137" },
+    // ============ 5th semester ============
     { name: "Principles of Finance", code: "530139" },
     { name: "Principles of Marketing", code: "530141" },
     { name: "Cost Accounting", code: "530143" },
     { name: "Tourism & Hospitality Management", code: "530145" },
     { name: "Entrepreneurship & Small Business Management", code: "530147" },
+    // ============ 6th semester ============
     { name: "Financial Management", code: "530149" },
     { name: "Marketing Management", code: "530151" },
     { name: "Management Accounting", code: "530153" },
     { name: "Enterprise Resource Planning", code: "530155" },
     { name: "Research Methodology", code: "530157" },
     { name: "Viva-Voce", code: "530158" },
+    // ============ Major in Accounting ============
     { name: "Intermediate Accounting", code: "542501" },
     { name: "Advanced Accounting", code: "542503" },
     { name: "Working Capital Management", code: "542505" },
@@ -42,6 +51,7 @@ const subjects = [
     { name: "Accounting Theory", code: "542517" },
     { name: "Accounting for Government and Non-Profit Organization and NGO", code: "542519" },
     { name: "Internship / Project Paper & Defence", code: "542520" },
+    // ============ Major in Management ============
     { name: "Organization Development", code: "542601" },
     { name: "Global Management", code: "542603" },
     { name: "Conflict Management", code: "542605" },
@@ -53,6 +63,7 @@ const subjects = [
     { name: "Strategic Management", code: "542617" },
     { name: "Total Quality Management", code: "542619" },
     { name: "Internship / Project Paper & Defence", code: "542620" },
+    // ============ Major in Marketing ============
     { name: "Customer Relationship Management", code: "542301" },
     { name: "Customer Behavior", code: "542303" },
     { name: "Brand Management", code: "542305" },
@@ -64,6 +75,7 @@ const subjects = [
     { name: "International Economics", code: "542317" },
     { name: "Agricultural & Food Marketing", code: "542319" },
     { name: "Internship / Project Paper & Defence", code: "542320" },
+     // ============ Major in Finance ============
     { name: "Corporate Finance", code: "542401" },
     { name: "Working Capital Management", code: "542403" },
     { name: "Bank Management", code: "542405" },
@@ -75,6 +87,7 @@ const subjects = [
     { name: "Security Analysis and Portfolio Management", code: "542417" },
     { name: "Real Estate Finance", code: "542419" },
     { name: "Internship / Project Paper & Defence", code: "542420" },
+
 ];
 
 const teachers = [
@@ -94,6 +107,8 @@ const teachers = [
     { name: "Mr. Sahabuddin Ahammed ACMA", designation: "Assistant Professor" },
     { name: "Ms Afroza Rahmat Rinky", designation: "Lecturer" },
 ];
+
+
 
 // Semester auto-detection from course code
 function getSemesterFromCode(code) {
