@@ -572,14 +572,14 @@ async function downloadPDF() {
   // never a mismatch or a stray extra page.
 
        const canvas = await html2canvas(element, {
-    scale: 2,
+    scale: 1,
     useCORS: true,
     logging: false,
     letterRendering: true,
     backgroundColor: '#ffffff',
     // Add these two lines to fix the blank render issue:
-    scrollX: 0,
-    scrollY: 0
+    scrollX: 1,
+    scrollY: 1,
 
 });
 
