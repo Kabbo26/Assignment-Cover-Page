@@ -568,38 +568,49 @@ async function downloadPDF() {
         // same image both for the on-screen preview AND the PDF, and lets us
         // size the PDF page to match the image pixel-for-pixel, so there's
         // never a mismatch or a stray extra page.
-       const canvas = await html2canvas(element, {
-    scale: 2,
+      // Ensure your element has an ID, or add a specific class to target it in onclone
+const canvas = await html2canvas(element, {
+    scale: 2, // You can increase this to 3 for even crisper text
     useCORS: true,
     logging: false,
     letterRendering: true,
     backgroundColor: '#ffffff',
-    // Add these two lines to fix the blank render issue:
     scrollX: 0,
-    scrollY: 0
+    scrollY: 0,
+    // Add onclone to force the capture at full size
+    onclone: (clonedDocument) => {
+        // Target the cloned version of your specific element
+        // (Replace 'your-element-id' with the actual ID of your A4 wrapper)
+        const clonedElement = clonedDocument.getElementById(element.id); 
+        
+        if (clonedElement) {
+            // Strip away any CSS transforms (like mobile scaling)
+            clonedElement.style.transform = 'none';
+            // Force the element to its true A4 dimensions for the snapshot
+            clonedElement.style.width = '210mm';
+            clonedElement.style.height = '297mm';
+            clonedElement.style.margin = '0'; 
+        }
+    }
 });
 
-        const imgData = canvas.toDataURL('image/jpeg', 0.95);
+const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-        // Build a single-page PDF whose page size is exactly the canvas's
-        // own pixel dimensions, and draw the image to fill that same size.
-        // Because both numbers come from the same canvas, there is no
-        // unit-conversion mismatch — the previous version's blank-corner and
-        // stray-second-page bugs both came from the page size and the image
-        // size being computed differently.
-        const jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
-        const pdf = new jsPDF({
-            unit: 'px',
-            format: [canvas.width, canvas.height],
-            orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
-        });
-        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
-        const pdfBlob = pdf.output('blob');
+// Build a single-page PDF whose page size is exactly the canvas's own pixel dimensions
+const jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
+const pdf = new jsPDF({
+    unit: 'px',
+    format: [canvas.width, canvas.height],
+    orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+});
 
-        if (pdfObjectUrl) {
-            URL.revokeObjectURL(pdfObjectUrl); // release the previous PDF, if any
-        }
-        pdfObjectUrl = URL.createObjectURL(pdfBlob);
+pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
+const pdfBlob = pdf.output('blob');
+
+if (pdfObjectUrl) {
+    URL.revokeObjectURL(pdfObjectUrl);
+}
+pdfObjectUrl = URL.createObjectURL(pdfBlob);
 
         // PDFs generally don't render inside an <iframe> on mobile browsers
         // (and unreliably even on desktop), so preview the same image we
