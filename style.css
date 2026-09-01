@@ -918,6 +918,33 @@ select:focus {
     box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
 }
 
+.hidden {
+    display: none !important;
+}
+
+.btn-download-ready {
+    display: none;
+    background: var(--success);
+    color: white;
+    padding: 12px 28px;
+    text-decoration: none;
+    animation: pulseReady 1.4s ease-in-out 2;
+}
+
+.btn-download-ready.visible {
+    display: inline-flex;
+}
+
+.btn-download-ready:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+}
+
+@keyframes pulseReady {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+}
+
 .btn-print {
     background: white;
     color: var(--text);

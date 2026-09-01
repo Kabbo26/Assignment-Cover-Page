@@ -513,9 +513,17 @@ document.getElementById('toggleBatchRow').addEventListener('change', function ()
 });
 
 // ============ PDF DOWNLOAD ============
+let pdfObjectUrl = null; // tracks the previous blob URL so we can release it
+
 async function downloadPDF() {
-    const btn = document.querySelector('.btn-download');
+    const btn = document.getElementById('downloadBtn');
+    const readyLink = document.getElementById('downloadReadyLink');
+
+    // Hide any previous "ready" link and go back to the generating state
+    readyLink.classList.remove('visible');
+    btn.classList.remove('hidden');
     btn.classList.add('loading');
+    btn.disabled = true;
     btn.textContent = 'Generating...';
 
     const element = document.getElementById('coverPage');
@@ -592,7 +600,30 @@ async function downloadPDF() {
             pagebreak: { mode: ['avoid-all'] },
         };
 
-        await html2pdf().set(opt).from(element).save();
+        // Build the PDF but DON'T call .save() here. Because generation is
+        // async (all the awaits above), by the time it finishes some
+        // browsers (notably Safari/iOS and in-app webviews) no longer treat
+        // this as a direct result of the user's click, and a programmatic
+        // save() can silently do nothing. Producing a Blob and handing it to
+        // a real, visible link that the user clicks themselves is reliable
+        // everywhere, because that click is a fresh, genuine user gesture.
+        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+
+        if (pdfObjectUrl) {
+            URL.revokeObjectURL(pdfObjectUrl); // release the previous PDF, if any
+        }
+        pdfObjectUrl = URL.createObjectURL(pdfBlob);
+
+        readyLink.href = pdfObjectUrl;
+        readyLink.download = generateFilename();
+        readyLink.classList.add('visible');
+        btn.classList.add('hidden');
+
+        // Also try an automatic download for browsers that still allow it at
+        // this point — the visible link above remains as the reliable
+        // fallback either way, and lets the user re-download without
+        // regenerating.
+        readyLink.click();
     } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF generation failed. Please try again.');
@@ -604,6 +635,7 @@ async function downloadPDF() {
         if (scrollContainer) scrollContainer.scrollTop = prevScrollTop;
 
         btn.classList.remove('loading');
+        btn.disabled = false;
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
     }
 }
