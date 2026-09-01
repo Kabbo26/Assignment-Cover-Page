@@ -5,312 +5,460 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DCC Cover Generator - Assignment Cover Page Maker</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Times+New+Roman&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-
-<!-- ============ HEADER ============ -->
-<header class="header">
-    <div class="header-left">
-        <div class="header-icon">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/>
-                <line x1="9" y1="9" x2="15" y2="9"/>
-                <line x1="9" y1="13" x2="15" y2="13"/>
-                <line x1="9" y1="17" x2="12" y2="17"/>
-            </svg>
-        </div>
-        <div>
-            <div class="header-title">DCC Cover Generator</div>
-            <div class="header-subtitle">Assignment cover page maker</div>
-        </div>
-    </div>
-    <div class="header-badge">DCC : BBA</div>
-</header>
-
-<!-- ============ MAIN CONTENT ============ -->
-<main class="main-container">
-    <!-- ============ LEFT PANEL - FORM ============ -->
-    <div class="form-panel">
-        <div class="form-card">
-            <div class="form-header">
-                <div class="form-header-icon">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <line x1="9" y1="9" x2="15" y2="9"/>
-                        <line x1="9" y1="13" x2="15" y2="13"/>
-                    </svg>
-                </div>
-                <div>
-                    <div class="form-header-title">Cover Page Details</div>
-                    <div class="form-header-desc">Fill in your assignment information</div>
-                </div>
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <div class="header-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/>
+                    <line x1="9" y1="8" x2="15" y2="8"/>
+                    <line x1="9" y1="12" x2="15" y2="12"/>
+                    <line x1="9" y1="16" x2="12" y2="16"/>
+                </svg>
             </div>
+            <div>
+                <div class="header-title">DCC Cover Generator</div>
+                <div class="header-subtitle">Assignment cover page maker</div>
+            </div>
+        </div>
+        <div class="header-badge">DCC : BBA</div>
+    </header>
 
-            <!-- ASSIGNMENT SECTION -->
-            <fieldset class="form-section">
-                <legend>ASSIGNMENT</legend>
-
-                <div class="field-group">
-                    <label>Subject Name <span class="tag">type or search</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="subjectName" placeholder="e.g. Supply Chain Management" autocomplete="off">
-                        <button class="clear-btn" onclick="clearField('subjectName')">&times;</button>
-                        <div class="autocomplete-list" id="subjectList"></div>
+    <!-- MAIN CONTENT -->
+    <main class="main-container">
+        <!-- LEFT PANEL - FORM -->
+        <aside class="form-panel">
+            <div class="form-card">
+                <div class="form-header">
+                    <div class="form-header-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
+                            <line x1="8" y1="8" x2="16" y2="8"/>
+                            <line x1="8" y1="12" x2="16" y2="12"/>
+                            <line x1="8" y1="16" x2="12" y2="16"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="form-header-title">Cover Page Details</div>
+                        <div class="form-header-sub">Fill in your assignment information</div>
                     </div>
                 </div>
 
-                <div class="field-group">
-                    <label>Course Code <span class="tag">type or search</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="courseCode" placeholder="e.g. 520137" autocomplete="off">
-                        <button class="clear-btn" onclick="clearField('courseCode')">&times;</button>
-                        <div class="autocomplete-list" id="codeList"></div>
-                    </div>
-                </div>
+                <!-- ASSIGNMENT SECTION -->
+                <fieldset class="form-section">
+                    <legend>ASSIGNMENT</legend>
 
-                <div class="field-group">
-                    <label>Assignment Title</label>
-                    <div class="input-wrapper">
-                        <input type="text" id="assignmentTitle" placeholder="e.g. Impact of E-Commerce on SMEs">
-                        <button class="clear-btn" onclick="clearField('assignmentTitle')">&times;</button>
-                    </div>
-                </div>
-            </fieldset>
-
-            <!-- PREPARED FOR SECTION -->
-            <fieldset class="form-section">
-                <legend>PREPARED FOR</legend>
-
-                <div class="field-group">
-                    <label>Teacher Name <span class="tag">type or search</span></label>
-                    <div class="input-wrapper">
-                        <input type="text" id="teacherName" placeholder="e.g. Ms. Sania Magfur" autocomplete="off">
-                        <button class="clear-btn" onclick="clearField('teacherName')">&times;</button>
-                        <div class="autocomplete-list" id="teacherList"></div>
-                    </div>
-                </div>
-
-                <div class="field-group">
-                    <label>Designation</label>
-                    <select id="designation">
-                        <option value="">— Select designation —</option>
-                        <option value="Professor">Professor</option>
-                        <option value="Associate Professor">Associate Professor</option>
-                        <option value="Assistant Professor">Assistant Professor</option>
-                        <option value="Lecturer">Lecturer</option>
-                    </select>
-                </div>
-
-                <div class="field-group">
-                    <label>Department <span class="tag editable">editable</span></label>
-                    <input type="text" id="teacherDept" value="Department Of Business Administration">
-                </div>
-            </fieldset>
-
-            <!-- PREPARED BY SECTION -->
-            <fieldset class="form-section">
-                <legend>PREPARED BY</legend>
-
-                <div class="field-group">
-                    <label>Student Name <span class="required">*</span></label>
-                    <input type="text" id="studentName" placeholder="e.g. Abdullah-Al-Saymon">
-                </div>
-
-                <div class="field-row">
                     <div class="field-group">
-                        <label>Roll <span class="required">*</span></label>
-                        <input type="text" id="roll" placeholder="e.g. 114">
+                        <label>Subject Name <span class="tag">type or search</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="subjectName" placeholder="e.g. Supply Chain Management" autocomplete="off">
+                            <button class="clear-btn" onclick="clearField('subjectName')">&times;</button>
+                            <div class="dropdown-list" id="subjectDropdown"></div>
+                        </div>
                     </div>
+
                     <div class="field-group">
-                        <label>Section <span class="required">*</span></label>
-                        <input type="text" id="section" placeholder="e.g. B">
+                        <label>Course Code <span class="tag">type or search</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="courseCode" placeholder="e.g. 520137" autocomplete="off">
+                            <button class="clear-btn" onclick="clearField('courseCode')">&times;</button>
+                            <div class="dropdown-list" id="codeDropdown"></div>
+                        </div>
                     </div>
-                </div>
 
-                <div class="field-row">
                     <div class="field-group">
-                        <label>Batch <span class="required">*</span></label>
-                        <input type="text" id="batch" placeholder="e.g. 25">
+                        <label>Assignment Title</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="assignmentTitle" placeholder="e.g. Impact of Supply Chain on Business">
+                            <button class="clear-btn" onclick="clearField('assignmentTitle')">&times;</button>
+                        </div>
                     </div>
+                </fieldset>
+
+                <!-- PREPARED FOR -->
+                <fieldset class="form-section">
+                    <legend>PREPARED FOR</legend>
+
                     <div class="field-group">
-                        <label>Semester <span class="tag">auto-fill</span></label>
-                        <input type="text" id="semester" placeholder="e.g. 04">
+                        <label>Teacher Name <span class="tag">type or search</span></label>
+                        <div class="input-wrapper">
+                            <input type="text" id="teacherName" placeholder="e.g. Ms. Sania Magfur" autocomplete="off">
+                            <button class="clear-btn" onclick="clearField('teacherName')">&times;</button>
+                            <div class="dropdown-list" id="teacherDropdown"></div>
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Designation</label>
+                        <select id="designation">
+                            <option value="">— Select designation —</option>
+                            <option value="Professor">Professor</option>
+                            <option value="Associate Professor">Associate Professor</option>
+                            <option value="Assistant Professor">Assistant Professor</option>
+                            <option value="Lecturer">Lecturer</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Department <span class="tag editable">editable</span></label>
+                        <input type="text" id="teacherDept" value="Department Of Business Administration">
+                    </div>
+                </fieldset>
+
+                <!-- PREPARED BY -->
+                <fieldset class="form-section">
+                    <legend>PREPARED BY</legend>
+
+                    <div class="field-group">
+                        <label>Student Name <span class="required">*</span></label>
+                        <input type="text" id="studentName" placeholder="e.g. Abdullah-Al-Saymon">
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Roll <span class="required">*</span></label>
+                            <input type="text" id="roll" placeholder="e.g. 114">
+                        </div>
+                        <div class="field-group">
+                            <label>Section <span class="required">*</span></label>
+                            <input type="text" id="section" placeholder="e.g. B">
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group">
+                            <label>Batch <span class="required">*</span></label>
+                            <input type="text" id="batch" placeholder="e.g. 25">
+                        </div>
+                        <div class="field-group">
+                            <label>Semester <span class="tag">auto-fill</span></label>
+                            <input type="text" id="semester" placeholder="e.g. 04">
+                        </div>
+                    </div>
+
+                    <div class="field-group">
+                        <label>Session</label>
+                        <input type="text" id="session" placeholder="e.g. 2022-2023">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Department <span class="tag editable">editable</span></label>
+                        <input type="text" id="studentDept" value="Department Of Business Administration">
+                    </div>
+                </fieldset>
+
+                <!-- SUBMISSION -->
+                <fieldset class="form-section">
+                    <legend>SUBMISSION</legend>
+                    <div class="field-group">
+                        <label>Date of Submission <span class="required">*</span></label>
+                        <input type="date" id="submissionDate">
+                    </div>
+                </fieldset>
+            </div>
+
+            <!-- ADVANCED SETTINGS -->
+            <div class="advanced-card">
+                <div class="advanced-header" onclick="toggleAdvanced()">
+                    <div class="advanced-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"/>
+                            <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+                        </svg>
+                    </div>
+                    <div class="advanced-text">
+                        <strong>Advanced Settings</strong>
+                        <small>Customize layout and appearance</small>
+                    </div>
+                    <span class="options-badge">OPTIONS</span>
+                    <span class="advanced-arrow" id="advancedArrow">▼</span>
+                </div>
+                <div class="advanced-body" id="advancedBody">
+                    <!-- Border Options -->
+                    <div class="adv-section">
+                        <h4>Border Options</h4>
+                        <div class="toggle-row">
+                            <label>Show Border</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleBorder" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="field-group" id="borderOptions">
+                            <label>Border Style</label>
+                            <select id="borderStyle">
+                                <option value="solid">Solid</option>
+                                <option value="double" selected>Double</option>
+                                <option value="dashed">Dashed</option>
+                                <option value="dotted">Dotted</option>
+                                <option value="groove">Groove</option>
+                                <option value="ridge">Ridge</option>
+                                <option value="inset">Inset</option>
+                                <option value="outset">Outset</option>
+                            </select>
+
+                            <label>Border Width</label>
+                            <select id="borderWidth">
+                                <option value="1px">1px - Thin</option>
+                                <option value="2px">2px - Normal</option>
+                                <option value="3px" selected>3px - Medium</option>
+                                <option value="4px">4px - Thick</option>
+                                <option value="5px">5px - Extra Thick</option>
+                            </select>
+
+                            <label>Border Color</label>
+                            <div class="color-row">
+                                <input type="color" id="borderColor" value="#1a237e">
+                                <span class="color-label" id="borderColorLabel">#1a237e</span>
+                            </div>
+
+                            <label>Border Radius</label>
+                            <select id="borderRadius">
+                                <option value="0px">None</option>
+                                <option value="4px">Small (4px)</option>
+                                <option value="8px" selected>Medium (8px)</option>
+                                <option value="12px">Large (12px)</option>
+                                <option value="16px">Extra Large (16px)</option>
+                            </select>
+
+                            <label>Border Padding</label>
+                            <select id="borderPadding">
+                                <option value="10px">Small (10px)</option>
+                                <option value="20px" selected>Normal (20px)</option>
+                                <option value="30px">Medium (30px)</option>
+                                <option value="40px">Large (40px)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Separator Line Options -->
+                    <div class="adv-section">
+                        <h4>Separator Line (Above Date)</h4>
+                        <div class="toggle-row">
+                            <label>Show Line</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleLine" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="field-group" id="lineOptions">
+                            <label>Line Style</label>
+                            <select id="lineStyle">
+                                <option value="solid" selected>Solid</option>
+                                <option value="double">Double</option>
+                                <option value="dashed">Dashed</option>
+                                <option value="dotted">Dotted</option>
+                                <option value="groove">Groove</option>
+                                <option value="ridge">Ridge</option>
+                            </select>
+
+                            <label>Line Width</label>
+                            <select id="lineWidth">
+                                <option value="1px" selected>1px - Thin</option>
+                                <option value="2px">2px - Normal</option>
+                                <option value="3px">3px - Medium</option>
+                                <option value="4px">4px - Thick</option>
+                            </select>
+
+                            <label>Line Color</label>
+                            <div class="color-row">
+                                <input type="color" id="lineColor" value="#cccccc">
+                                <span class="color-label" id="lineColorLabel">#cccccc</span>
+                            </div>
+
+                            <label>Line Length</label>
+                            <select id="lineLength">
+                                <option value="50%">Short (50%)</option>
+                                <option value="70%" selected>Medium (70%)</option>
+                                <option value="85%">Long (85%)</option>
+                                <option value="100%">Full Width</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Element Toggles -->
+                    <div class="adv-section">
+                        <h4>Show / Hide Elements</h4>
+                        <div class="toggle-row">
+                            <label>Show Logo</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleLogo" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label>Show College Name</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleCollege" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label>Show Department Title</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleDeptTitle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label>Show "Assignment On" Text</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleAssignOn" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                        <div class="toggle-row">
+                            <label>Show Batch/Semester/Session Row</label>
+                            <label class="switch">
+                                <input type="checkbox" id="toggleBatchRow" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Print Size -->
+                    <div class="adv-section">
+                        <h4>Print Paper Size</h4>
+                        <div class="field-group">
+                            <select id="printSize">
+                                <option value="A4" selected>A4 (210 × 297 mm)</option>
+                                <option value="A3">A3 (297 × 420 mm)</option>
+                                <option value="A5">A5 (148 × 210 mm)</option>
+                                <option value="Letter">Letter (8.5 × 11 in)</option>
+                                <option value="Legal">Legal (8.5 × 14 in)</option>
+                                <option value="Tabloid">Tabloid (11 × 17 in)</option>
+                                <option value="Executive">Executive (7.25 × 10.5 in)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-
-                <div class="field-group">
-                    <label>Session</label>
-                    <input type="text" id="session" placeholder="e.g. 2022-2023">
-                </div>
-
-                <div class="field-group">
-                    <label>Department <span class="tag editable">editable</span></label>
-                    <input type="text" id="studentDept" value="Department Of Business Administration">
-                </div>
-            </fieldset>
-
-            <!-- SUBMISSION SECTION -->
-            <fieldset class="form-section">
-                <legend>SUBMISSION</legend>
-                <div class="field-group">
-                    <label>Date of Submission <span class="required">*</span></label>
-                    <input type="date" id="submissionDate">
-                </div>
-            </fieldset>
-        </div>
-
-        <!-- ADVANCED SETTINGS -->
-        <div class="advanced-card" id="advancedCard">
-            <div class="advanced-header" onclick="toggleAdvanced()">
-                <div class="advanced-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4f46e5" stroke-width="2">
-                        <circle cx="12" cy="12" r="3"/>
-                        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M16.36 16.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M16.36 7.64l1.42-1.42"/>
-                    </svg>
-                </div>
-                <div class="advanced-text">
-                    <div class="advanced-title">Advanced Settings</div>
-                    <div class="advanced-desc">Customize layout and appearance</div>
-                </div>
-                <button class="options-btn">OPTIONS</button>
-                <span class="advanced-arrow" id="advancedArrow">&#9662;</span>
             </div>
-            <div class="advanced-body" id="advancedBody">
-                <div class="field-group">
-                    <label>Border Style</label>
-                    <select id="borderStyle">
-                        <option value="double">Double Border</option>
-                        <option value="single">Single Border</option>
-                        <option value="thick">Thick Border</option>
-                        <option value="none">No Border</option>
-                    </select>
+        </aside>
+
+        <!-- RIGHT PANEL - PREVIEW -->
+        <section class="preview-panel">
+            <div class="preview-topbar">
+                <div class="preview-label">
+                    <span class="live-dot"></span> Live Preview
                 </div>
-                <div class="field-group">
-                    <label>Border Color</label>
-                    <input type="color" id="borderColor" value="#000000" class="color-input">
-                </div>
-                <div class="field-group">
-                    <label>Print Size</label>
-                    <select id="printSize">
-                        <option value="A4" selected>A4</option>
-                        <option value="A3">A3</option>
-                        <option value="A5">A5</option>
-                        <option value="Letter">Letter</option>
-                        <option value="Legal">Legal</option>
-                        <option value="Tabloid">Tabloid</option>
-                        <option value="Executive">Executive</option>
-                    </select>
+                <div class="preview-actions">
+                    <span class="zoom-label" id="zoomLabel">95% zoom</span>
+                    <button class="live-badge">● LIVE</button>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- ============ RIGHT PANEL - PREVIEW ============ -->
-    <div class="preview-panel">
-        <div class="preview-header">
-            <div class="preview-live">
-                <span class="live-dot"></span> Live Preview
-            </div>
-            <div class="preview-actions">
-                <span class="zoom-label" id="zoomLabel">95% zoom</span>
-                <button class="live-badge" onclick="refreshPreview()">&#8226; LIVE</button>
-            </div>
-        </div>
+            <div class="preview-scroll" id="previewScroll">
+                <div class="a4-page" id="coverPage">
+                    <div class="page-border" id="pageBorder">
+                        <div class="page-content" id="pageContent">
+                            <!-- Logo -->
+                            <div class="cv-logo" id="cvLogo">
+                                <img src="image/logo.png" alt="DCC Logo" crossorigin="anonymous" id="logoImg">
+                            </div>
 
-        <div class="preview-scroll" id="previewScroll">
-            <div class="a4-page" id="coverPage">
-                <div class="page-border" id="pageBorder">
-                    <div class="page-content" id="pageContent">
-                        <!-- Logo -->
-                        <div class="cv-logo">
-                            <img src="images/logo.png" alt="DCC Logo" id="logoImg" crossorigin="anonymous">
+                            <!-- College Name -->
+                            <h1 class="cv-college" id="cvCollege">DHAKA CITY COLLEGE</h1>
+
+                            <!-- Department Title -->
+                            <h2 class="cv-dept-title" id="cvDeptTitle">DEPARTMENT OF BUSINESS ADMINISTRATION</h2>
+
+                            <!-- Assignment On -->
+                            <div class="cv-assignment-on" id="cvAssignOn">
+                                <span class="cv-label-bold">Assignment on</span>
+                            </div>
+
+                            <!-- Assignment Title -->
+                            <div class="cv-assign-title" id="cvAssignTitle">
+                                <em class="placeholder-text">ASSIGNMENT TITLE</em>
+                            </div>
+
+                            <!-- Course Name -->
+                            <div class="cv-course-row">
+                                <span class="cv-label-bold">Course Name:</span>
+                                <em class="placeholder-text" id="cvCourseName">Name Of The Course</em>
+                            </div>
+
+                            <!-- Course Code -->
+                            <div class="cv-course-row">
+                                <span class="cv-label-bold">Course Code:</span>
+                                <span id="cvCourseCode" class="placeholder-text">——</span>
+                            </div>
+
+                            <!-- Batch Semester Session Row -->
+                            <div class="cv-batch-row" id="cvBatchRow">
+                                <span><strong>BBA Batch:</strong> <span id="cvBatch" class="placeholder-text">——</span></span>
+                                <span class="cv-separator">—</span>
+                                <span><strong>Semester:</strong> <span id="cvSemester" class="placeholder-text">——</span></span>
+                                <span class="cv-separator">—</span>
+                                <span><strong>Session:</strong> <span id="cvSession" class="placeholder-text">——</span></span>
+                            </div>
+
+                            <!-- Submitted To -->
+                            <div class="cv-section-block">
+                                <h3 class="cv-section-heading">Submitted to</h3>
+                                <div class="cv-teacher-name" id="cvTeacherName"><em class="placeholder-text">TEACHER'S NAME</em></div>
+                                <div class="cv-designation" id="cvDesignation"><em class="placeholder-text">Designation</em></div>
+                                <div class="cv-dept">Department of <em>Business Administration</em></div>
+                                <div class="cv-college-small">Dhaka City College</div>
+                            </div>
+
+                            <!-- Submitted By -->
+                            <div class="cv-section-block">
+                                <h3 class="cv-section-heading">Submitted by</h3>
+                                <div class="cv-student-name" id="cvStudentName"><em class="placeholder-text">Student's Name</em></div>
+                                <div class="cv-info-row"><strong>Roll No:</strong> <span id="cvRoll" class="placeholder-text">——</span></div>
+                                <div class="cv-info-row"><strong>Section:</strong> <span id="cvSection" class="placeholder-text">——</span></div>
+                                <div class="cv-info-row"><strong>Session:</strong> <span id="cvSessionBy" class="placeholder-text">——</span></div>
+                            </div>
+
+                            <!-- Spacer pushes date to bottom -->
+                            <div class="cv-spacer"></div>
+
+                            <!-- Separator Line -->
+                            <div class="cv-line-container" id="cvLineContainer">
+                                <hr class="cv-separator-line" id="cvSeparatorLine">
+                            </div>
+
+                            <!-- Date -->
+                            <div class="cv-date" id="cvDate">
+                                <em class="placeholder-text">Date of Submission: ——</em>
+                            </div>
                         </div>
-
-                        <!-- College Name -->
-                        <h1 class="cv-college">DHAKA CITY COLLEGE</h1>
-                        <h2 class="cv-department" id="cvDepartment">DEPARTMENT OF BUSINESS ADMINISTRATION</h2>
-
-                        <!-- Assignment On -->
-                        <div class="cv-section-title">Assignment on</div>
-                        <div class="cv-assignment-title" id="cvAssignmentTitle"><em>ASSIGNMENT TITLE</em></div>
-
-                        <!-- Course Info -->
-                        <div class="cv-info-line">
-                            <strong>Course Name:</strong> <span class="cv-placeholder" id="cvCourseName">Name Of The Course</span>
-                        </div>
-                        <div class="cv-info-line">
-                            <strong>Course Code:</strong> <span class="cv-placeholder" id="cvCourseCode">——</span>
-                        </div>
-                        <div class="cv-info-line">
-                            <strong>BBA Batch:</strong> <span class="cv-placeholder" id="cvBatch">—</span> &nbsp;
-                            <strong>Semester:</strong> <span class="cv-placeholder" id="cvSemester">—</span> &nbsp;
-                            <strong>Session:</strong> <span class="cv-placeholder" id="cvSession">——</span>
-                        </div>
-
-                        <!-- Submitted To -->
-                        <div class="cv-section-heading">Submitted to</div>
-                        <div class="cv-teacher-name" id="cvTeacherName"><em>TEACHER'S NAME</em></div>
-                        <div class="cv-designation" id="cvDesignation"><em>Designation</em></div>
-                        <div class="cv-dept-line">Department of <em>Business Administration</em></div>
-                        <div class="cv-college-line">Dhaka City College</div>
-
-                        <!-- Submitted By -->
-                        <div class="cv-section-heading">Submitted by</div>
-                        <div class="cv-student-name" id="cvStudentName"><em>Student's Name</em></div>
-                        <div class="cv-info-line"><strong>Roll No:</strong> <span class="cv-placeholder" id="cvRoll">——</span></div>
-                        <div class="cv-info-line"><strong>Section:</strong> <span class="cv-placeholder" id="cvSection">—</span></div>
-                        <div class="cv-info-line"><strong>Session:</strong> <span class="cv-placeholder" id="cvSessionBottom">——</span></div>
-
-                        <!-- Date -->
-                        <div class="cv-date" id="cvDate"><strong>Date of Submission:</strong> <span class="cv-placeholder">…………</span></div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</main>
+        </section>
+    </main>
 
-<!-- ============ BOTTOM ACTION BAR ============ -->
-<div class="action-bar">
-    <button class="btn-clear" onclick="clearAll()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
-        </svg>
-        Clear
-    </button>
-    <button class="btn-download" onclick="downloadPDF()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-            <polyline points="7 10 12 15 17 10"/>
-            <line x1="12" y1="15" x2="12" y2="3"/>
-        </svg>
-        Download PDF
-    </button>
-    <button class="btn-print" onclick="printCover()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="6 9 6 2 18 2 18 9"/>
-            <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-            <rect x="6" y="14" width="12" height="8"/>
-        </svg>
-        Print
-    </button>
-</div>
+    <!-- BOTTOM ACTION BAR -->
+    <footer class="action-bar">
+        <button class="btn btn-clear" onclick="clearAll()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Clear
+        </button>
+        <button class="btn btn-download" onclick="downloadPDF()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download PDF
+        </button>
+        <button class="btn btn-print" onclick="printCover()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print
+        </button>
+    </footer>
 
-<!-- ============ PRINT MODAL ============ -->
-<div class="modal-overlay" id="printModal">
-    <div class="modal-card">
-        <div class="modal-header">
+    <!-- Print Size Modal -->
+    <div class="modal-overlay" id="printModal">
+        <div class="modal-card">
             <h3>Print Settings</h3>
-            <button class="modal-close" onclick="closePrintModal()">&times;</button>
-        </div>
-        <div class="modal-body">
             <div class="field-group">
                 <label>Paper Size</label>
                 <select id="modalPrintSize">
-                    <option value="A3">A3 (297 × 420 mm)</option>
                     <option value="A4" selected>A4 (210 × 297 mm)</option>
+                    <option value="A3">A3 (297 × 420 mm)</option>
                     <option value="A5">A5 (148 × 210 mm)</option>
                     <option value="Letter">Letter (8.5 × 11 in)</option>
                     <option value="Legal">Legal (8.5 × 14 in)</option>
@@ -318,31 +466,13 @@
                     <option value="Executive">Executive (7.25 × 10.5 in)</option>
                 </select>
             </div>
-            <div class="field-group">
-                <label>Orientation</label>
-                <select id="printOrientation">
-                    <option value="portrait" selected>Portrait</option>
-                    <option value="landscape">Landscape</option>
-                </select>
+            <div class="modal-actions">
+                <button class="btn btn-clear" onclick="closePrintModal()">Cancel</button>
+                <button class="btn btn-download" onclick="executePrint()">Print Now</button>
             </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn-clear" onclick="closePrintModal()">Cancel</button>
-            <button class="btn-download" onclick="executePrint()">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="6 9 6 2 18 2 18 9"/>
-                    <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-                    <rect x="6" y="14" width="12" height="8"/>
-                </svg>
-                Print Now
-            </button>
-        </div>
     </div>
-</div>
 
-<!-- ============ TOAST ============ -->
-<div class="toast" id="toast"></div>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

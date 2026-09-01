@@ -95,617 +95,600 @@ const teachers = [
     { name: "Ms Afroza Rahmat Rinky", designation: "Lecturer" },
 ];
 
-// Semester mapping based on course code prefix
-const semesterMap = {
-    '5101': '01', '2115': '01',
-    '5101': '02',
-    '5201': '03',
-    '5201': '04',
-    '5301': '05',
-    '5301': '06',
-};
-
+// Semester auto-detection from course code
 function getSemesterFromCode(code) {
-    if (!code || code.length < 6) return '';
-    const prefix = code.substring(0, 4);
-    const num = parseInt(code.substring(4));
-    
-    // 1st semester: 510101-510107, 211501
-    if ((prefix === '5101' && num >= 1 && num <= 7) || code === '211501') return '01';
-    // 2nd semester: 510109-510117
-    if (prefix === '5101' && num >= 9 && num <= 17) return '02';
-    // 3rd semester: 520119-520127
-    if (prefix === '5201' && num >= 19 && num <= 27) return '03';
-    // 4th semester: 520129-520137
-    if (prefix === '5201' && num >= 29 && num <= 37) return '04';
-    // 5th semester: 530139-530147
-    if (prefix === '5301' && num >= 39 && num <= 47) return '05';
-    // 6th semester: 530149-530158
-    if (prefix === '5301' && num >= 49 && num <= 58) return '06';
-    // Major subjects: 7th & 8th semester
-    if (prefix === '5425' || prefix === '5426' || prefix === '5423' || prefix === '5424') {
-        if (num <= 10) return '07';
-        return '08';
-    }
-    return '';
+    const semesterMap = {
+        '510101': '01', '510103': '01', '510105': '01', '510107': '01', '211501': '01',
+        '510109': '02', '510111': '02', '510113': '02', '510115': '02', '510117': '02',
+        '520119': '03', '520121': '03', '520123': '03', '520125': '03', '520127': '03',
+        '520129': '04', '520131': '04', '520133': '04', '520135': '04', '520137': '04',
+        '530139': '05', '530141': '05', '530143': '05', '530145': '05', '530147': '05',
+        '530149': '06', '530151': '06', '530153': '06', '530155': '06', '530157': '06', '530158': '06',
+    };
+    // Major subjects are 7th and 8th semester
+    if (code.startsWith('542')) return '07/08';
+    return semesterMap[code] || '';
 }
 
 // ============ DOM ELEMENTS ============
-const $ = id => document.getElementById(id);
-
-const els = {
-    subjectName: $('subjectName'),
-    courseCode: $('courseCode'),
-    assignmentTitle: $('assignmentTitle'),
-    teacherName: $('teacherName'),
-    designation: $('designation'),
-    teacherDept: $('teacherDept'),
-    studentName: $('studentName'),
-    roll: $('roll'),
-    section: $('section'),
-    batch: $('batch'),
-    semester: $('semester'),
-    session: $('session'),
-    studentDept: $('studentDept'),
-    submissionDate: $('submissionDate'),
-    borderStyle: $('borderStyle'),
-    borderColor: $('borderColor'),
-    printSize: $('printSize'),
+const dom = {
+    subjectName: document.getElementById('subjectName'),
+    courseCode: document.getElementById('courseCode'),
+    assignmentTitle: document.getElementById('assignmentTitle'),
+    teacherName: document.getElementById('teacherName'),
+    designation: document.getElementById('designation'),
+    teacherDept: document.getElementById('teacherDept'),
+    studentName: document.getElementById('studentName'),
+    roll: document.getElementById('roll'),
+    section: document.getElementById('section'),
+    batch: document.getElementById('batch'),
+    semester: document.getElementById('semester'),
+    session: document.getElementById('session'),
+    studentDept: document.getElementById('studentDept'),
+    submissionDate: document.getElementById('submissionDate'),
+    // Dropdowns
+    subjectDropdown: document.getElementById('subjectDropdown'),
+    codeDropdown: document.getElementById('codeDropdown'),
+    teacherDropdown: document.getElementById('teacherDropdown'),
+    // Preview elements
+    cvLogo: document.getElementById('cvLogo'),
+    cvCollege: document.getElementById('cvCollege'),
+    cvDeptTitle: document.getElementById('cvDeptTitle'),
+    cvAssignOn: document.getElementById('cvAssignOn'),
+    cvAssignTitle: document.getElementById('cvAssignTitle'),
+    cvCourseName: document.getElementById('cvCourseName'),
+    cvCourseCode: document.getElementById('cvCourseCode'),
+    cvBatchRow: document.getElementById('cvBatchRow'),
+    cvBatch: document.getElementById('cvBatch'),
+    cvSemester: document.getElementById('cvSemester'),
+    cvSession: document.getElementById('cvSession'),
+    cvTeacherName: document.getElementById('cvTeacherName'),
+    cvDesignation: document.getElementById('cvDesignation'),
+    cvStudentName: document.getElementById('cvStudentName'),
+    cvRoll: document.getElementById('cvRoll'),
+    cvSection: document.getElementById('cvSection'),
+    cvSessionBy: document.getElementById('cvSessionBy'),
+    cvDate: document.getElementById('cvDate'),
+    cvSeparatorLine: document.getElementById('cvSeparatorLine'),
+    cvLineContainer: document.getElementById('cvLineContainer'),
+    // Advanced
+    pageBorder: document.getElementById('pageBorder'),
+    coverPage: document.getElementById('coverPage'),
 };
 
-// ============ AUTOCOMPLETE SETUP ============
-function setupAutocomplete(input, listEl, data, type) {
-    let activeIndex = -1;
+// ============ DROPDOWN LOGIC ============
+function createDropdown(inputEl, dropdownEl, dataList, type) {
+    let selectedIndex = -1;
 
-    input.addEventListener('input', function() {
+    inputEl.addEventListener('input', function () {
         const val = this.value.toLowerCase().trim();
-        listEl.innerHTML = '';
-        activeIndex = -1;
+        dropdownEl.innerHTML = '';
+        selectedIndex = -1;
 
-        if (!val) {
-            listEl.classList.remove('show');
-            return;
-        }
-
-        let filtered;
-        if (type === 'subject') {
-            filtered = data.filter(s => s.name.toLowerCase().includes(val));
-        } else if (type === 'code') {
-            filtered = data.filter(s => s.code.includes(val) || s.name.toLowerCase().includes(val));
-        } else if (type === 'teacher') {
-            filtered = data.filter(t => t.name.toLowerCase().includes(val));
-        }
-
-        if (filtered.length === 0) {
-            listEl.classList.remove('show');
-            return;
-        }
-
-        filtered.forEach((item, idx) => {
-            const div = document.createElement('div');
-            div.className = 'autocomplete-item';
-
-            if (type === 'subject') {
-                div.innerHTML = `<div>${highlightMatch(item.name, val)}</div><div class="item-code">Code: ${item.code}</div>`;
-            } else if (type === 'code') {
-                div.innerHTML = `<div>${highlightMatch(item.code, val)}</div><div class="item-code">${item.name}</div>`;
-            } else if (type === 'teacher') {
-                div.innerHTML = `<div>${highlightMatch(item.name, val)}</div><div class="item-designation">${item.designation}</div>`;
-            }
-
-            div.addEventListener('click', () => {
-                if (type === 'subject') {
-                    els.subjectName.value = item.name;
-                    els.courseCode.value = item.code;
-                    const sem = getSemesterFromCode(item.code);
-                    if (sem) els.semester.value = sem;
-                } else if (type === 'code') {
-                    els.courseCode.value = item.code;
-                    els.subjectName.value = item.name;
-                    const sem = getSemesterFromCode(item.code);
-                    if (sem) els.semester.value = sem;
-                } else if (type === 'teacher') {
-                    els.teacherName.value = item.name;
-                    els.designation.value = item.designation;
-                }
-                listEl.classList.remove('show');
-                updatePreview();
+        if (val.length === 0) {
+            // Show all items
+            dataList.forEach((item, idx) => {
+                const div = createDropdownItem(item, type, idx);
+                dropdownEl.appendChild(div);
             });
+        } else {
+            const filtered = dataList.filter(item => {
+                if (type === 'subject') {
+                    return item.name.toLowerCase().includes(val) || item.code.includes(val);
+                } else if (type === 'code') {
+                    return item.code.includes(val) || item.name.toLowerCase().includes(val);
+                } else {
+                    return item.name.toLowerCase().includes(val);
+                }
+            });
+            filtered.forEach((item, idx) => {
+                const div = createDropdownItem(item, type, idx);
+                dropdownEl.appendChild(div);
+            });
+        }
 
-            listEl.appendChild(div);
-        });
-
-        listEl.classList.add('show');
+        dropdownEl.classList.add('active');
     });
 
-    input.addEventListener('keydown', function(e) {
-        const items = listEl.querySelectorAll('.autocomplete-item');
-        if (!listEl.classList.contains('show') || items.length === 0) return;
+    inputEl.addEventListener('focus', function () {
+        if (dropdownEl.children.length === 0) {
+            dataList.forEach((item, idx) => {
+                const div = createDropdownItem(item, type, idx);
+                dropdownEl.appendChild(div);
+            });
+        }
+        dropdownEl.classList.add('active');
+    });
 
+    inputEl.addEventListener('keydown', function (e) {
+        const items = dropdownEl.querySelectorAll('.dropdown-item');
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            activeIndex = Math.min(activeIndex + 1, items.length - 1);
-            updateActiveItem(items, activeIndex);
+            selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
+            updateSelection(items);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            activeIndex = Math.max(activeIndex - 1, 0);
-            updateActiveItem(items, activeIndex);
+            selectedIndex = Math.max(selectedIndex - 1, 0);
+            updateSelection(items);
         } else if (e.key === 'Enter') {
             e.preventDefault();
-            if (activeIndex >= 0 && items[activeIndex]) {
-                items[activeIndex].click();
+            if (selectedIndex >= 0 && items[selectedIndex]) {
+                items[selectedIndex].click();
             }
         } else if (e.key === 'Escape') {
-            listEl.classList.remove('show');
+            dropdownEl.classList.remove('active');
         }
     });
 
-    input.addEventListener('focus', function() {
-        if (this.value.trim() && listEl.children.length > 0) {
-            listEl.classList.add('show');
+    function updateSelection(items) {
+        items.forEach((item, idx) => {
+            item.classList.toggle('active', idx === selectedIndex);
+        });
+        if (items[selectedIndex]) {
+            items[selectedIndex].scrollIntoView({ block: 'nearest' });
         }
-    });
-}
-
-function updateActiveItem(items, idx) {
-    items.forEach(item => item.classList.remove('active'));
-    if (items[idx]) {
-        items[idx].classList.add('active');
-        items[idx].scrollIntoView({ block: 'nearest' });
     }
-}
 
-function highlightMatch(text, query) {
-    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
-    return text.replace(regex, '<strong style="color:#4f46e5">$1</strong>');
-}
+    function createDropdownItem(item, type, idx) {
+        const div = document.createElement('div');
+        div.classList.add('dropdown-item');
 
-function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
+        if (type === 'subject') {
+            div.innerHTML = `${item.name} <span class="item-code">${item.code}</span>`;
+            div.addEventListener('click', () => selectSubject(item));
+        } else if (type === 'code') {
+            div.innerHTML = `${item.code} <span class="item-code">${item.name}</span>`;
+            div.addEventListener('click', () => selectSubject(item));
+        } else if (type === 'teacher') {
+            div.innerHTML = `${item.name} <span class="item-code">${item.designation}</span>`;
+            div.addEventListener('click', () => selectTeacher(item));
+        }
 
-// Close autocomplete on outside click
-document.addEventListener('click', function(e) {
-    document.querySelectorAll('.autocomplete-list').forEach(list => {
-        if (!list.parentElement.contains(e.target)) {
-            list.classList.remove('show');
+        return div;
+    }
+
+    // Close dropdown on outside click
+    document.addEventListener('click', function (e) {
+        if (!inputEl.contains(e.target) && !dropdownEl.contains(e.target)) {
+            dropdownEl.classList.remove('active');
         }
     });
-});
+}
 
-// Initialize autocompletes
-setupAutocomplete(els.subjectName, $('subjectList'), subjects, 'subject');
-setupAutocomplete(els.courseCode, $('codeList'), subjects, 'code');
-setupAutocomplete(els.teacherName, $('teacherList'), teachers, 'teacher');
+function selectSubject(subject) {
+    dom.subjectName.value = subject.name;
+    dom.courseCode.value = subject.code;
+    dom.subjectDropdown.classList.remove('active');
+    dom.codeDropdown.classList.remove('active');
+
+    // Auto-fill semester
+    const sem = getSemesterFromCode(subject.code);
+    if (sem) {
+        dom.semester.value = sem;
+    }
+
+    updatePreview();
+}
+
+function selectTeacher(teacher) {
+    dom.teacherName.value = teacher.name;
+    dom.designation.value = teacher.designation;
+    dom.teacherDropdown.classList.remove('active');
+    updatePreview();
+}
+
+// Initialize dropdowns
+createDropdown(dom.subjectName, dom.subjectDropdown, subjects, 'subject');
+createDropdown(dom.courseCode, dom.codeDropdown, subjects, 'code');
+createDropdown(dom.teacherName, dom.teacherDropdown, teachers, 'teacher');
+
+// ============ CLEAR FIELD ============
+function clearField(fieldId) {
+    const el = document.getElementById(fieldId);
+    el.value = '';
+    if (fieldId === 'subjectName') {
+        dom.courseCode.value = '';
+        dom.semester.value = '';
+    }
+    if (fieldId === 'courseCode') {
+        dom.subjectName.value = '';
+        dom.semester.value = '';
+    }
+    if (fieldId === 'teacherName') {
+        dom.designation.value = '';
+    }
+    updatePreview();
+}
+
+function clearAll() {
+    const inputs = document.querySelectorAll('.form-card input[type="text"], .form-card input[type="date"]');
+    inputs.forEach(input => {
+        if (input.id === 'teacherDept' || input.id === 'studentDept') {
+            input.value = 'Department Of Business Administration';
+        } else {
+            input.value = '';
+        }
+    });
+    dom.designation.value = '';
+    updatePreview();
+}
 
 // ============ LIVE PREVIEW UPDATE ============
 function updatePreview() {
-    // Assignment title
-    const titleEl = $('cvAssignmentTitle');
-    if (els.assignmentTitle.value.trim()) {
-        titleEl.innerHTML = `<em>${escapeHtml(els.assignmentTitle.value)}</em>`;
-        titleEl.classList.add('filled');
-    } else {
-        titleEl.innerHTML = '<em>ASSIGNMENT TITLE</em>';
-        titleEl.classList.remove('filled');
-    }
+    // Assignment Title
+    const title = dom.assignmentTitle.value.trim();
+    dom.cvAssignTitle.innerHTML = title
+        ? `<em class="filled-text">${escapeHtml(title)}</em>`
+        : `<em class="placeholder-text">ASSIGNMENT TITLE</em>`;
 
-    // Course name
-    updatePlaceholder('cvCourseName', els.subjectName.value, 'Name Of The Course');
+    // Course Name
+    const courseName = dom.subjectName.value.trim();
+    dom.cvCourseName.innerHTML = courseName
+        ? `<em class="filled-text">${escapeHtml(courseName)}</em>`
+        : `<em class="placeholder-text">Name Of The Course</em>`;
+    dom.cvCourseName.className = courseName ? 'filled-text' : 'placeholder-text';
 
-    // Course code
-    updatePlaceholder('cvCourseCode', els.courseCode.value, '——');
+    // Course Code
+    const code = dom.courseCode.value.trim();
+    dom.cvCourseCode.textContent = code || '——';
+    dom.cvCourseCode.className = code ? 'filled-text' : 'placeholder-text';
 
     // Batch
-    updatePlaceholder('cvBatch', els.batch.value, '—');
+    const batch = dom.batch.value.trim();
+    dom.cvBatch.textContent = batch || '——';
+    dom.cvBatch.className = batch ? '' : 'placeholder-text';
 
     // Semester
-    updatePlaceholder('cvSemester', els.semester.value, '—');
+    const semester = dom.semester.value.trim();
+    dom.cvSemester.textContent = semester || '——';
+    dom.cvSemester.className = semester ? '' : 'placeholder-text';
 
     // Session
-    updatePlaceholder('cvSession', els.session.value, '——');
-    updatePlaceholder('cvSessionBottom', els.session.value, '——');
+    const session = dom.session.value.trim();
+    dom.cvSession.textContent = session || '——';
+    dom.cvSession.className = session ? '' : 'placeholder-text';
+    dom.cvSessionBy.textContent = session || '——';
+    dom.cvSessionBy.className = session ? '' : 'placeholder-text';
 
-    // Teacher name
-    const teacherEl = $('cvTeacherName');
-    if (els.teacherName.value.trim()) {
-        teacherEl.innerHTML = `<em>${escapeHtml(els.teacherName.value)}</em>`;
-        teacherEl.classList.add('filled');
-    } else {
-        teacherEl.innerHTML = "<em>TEACHER'S NAME</em>";
-        teacherEl.classList.remove('filled');
-    }
+    // Teacher
+    const teacher = dom.teacherName.value.trim();
+    dom.cvTeacherName.innerHTML = teacher
+        ? `<em class="filled-text" style="color:#b8860b">${escapeHtml(teacher)}</em>`
+        : `<em class="placeholder-text">TEACHER'S NAME</em>`;
 
     // Designation
-    const desigEl = $('cvDesignation');
-    if (els.designation.value) {
-        desigEl.innerHTML = `<em>${escapeHtml(els.designation.value)}</em>`;
-        desigEl.classList.add('filled');
-    } else {
-        desigEl.innerHTML = '<em>Designation</em>';
-        desigEl.classList.remove('filled');
-    }
+    const desig = dom.designation.value;
+    dom.cvDesignation.innerHTML = desig
+        ? `<em class="filled-text" style="color:#666">${escapeHtml(desig)}</em>`
+        : `<em class="placeholder-text">Designation</em>`;
 
-    // Department text on cover
-    const deptText = els.teacherDept.value || 'Business Administration';
-    // Extract department name for italic display
-    const deptShort = deptText.replace(/^Department\s*(Of|of)\s*/i, '');
-    document.querySelector('.cv-dept-line').innerHTML = `Department of <em>${escapeHtml(deptShort)}</em>`;
-
-    // Student name
-    const studentEl = $('cvStudentName');
-    if (els.studentName.value.trim()) {
-        studentEl.innerHTML = `<em>${escapeHtml(els.studentName.value)}</em>`;
-        studentEl.classList.add('filled');
-    } else {
-        studentEl.innerHTML = "<em>Student's Name</em>";
-        studentEl.classList.remove('filled');
-    }
+    // Student
+    const student = dom.studentName.value.trim();
+    dom.cvStudentName.innerHTML = student
+        ? `<em class="filled-text" style="color:#b8860b">${escapeHtml(student)}</em>`
+        : `<em class="placeholder-text">Student's Name</em>`;
 
     // Roll
-    updatePlaceholder('cvRoll', els.roll.value, '——');
+    const roll = dom.roll.value.trim();
+    dom.cvRoll.textContent = roll || '——';
+    dom.cvRoll.className = roll ? '' : 'placeholder-text';
 
     // Section
-    updatePlaceholder('cvSection', els.section.value, '—');
-
-    // Department header
-    $('cvDepartment').textContent = (els.teacherDept.value || 'DEPARTMENT OF BUSINESS ADMINISTRATION').toUpperCase();
+    const sec = dom.section.value.trim();
+    dom.cvSection.textContent = sec || '——';
+    dom.cvSection.className = sec ? '' : 'placeholder-text';
 
     // Date
-    const dateEl = $('cvDate');
-    if (els.submissionDate.value) {
-        const d = new Date(els.submissionDate.value);
-        const formatted = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-        dateEl.innerHTML = `<strong>Date of Submission:</strong> ${formatted}`;
+    const dateVal = dom.submissionDate.value;
+    if (dateVal) {
+        const d = new Date(dateVal);
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formatted = d.toLocaleDateString('en-US', options);
+        dom.cvDate.innerHTML = `<strong>Date of Submission:</strong> ${formatted}`;
+        dom.cvDate.style.color = '#333';
+        dom.cvDate.style.fontStyle = 'italic';
     } else {
-        dateEl.innerHTML = '<strong>Date of Submission:</strong> <span class="cv-placeholder">…………</span>';
-    }
-
-    // Border style
-    updateBorderStyle();
-}
-
-function updatePlaceholder(id, value, placeholder) {
-    const el = $(id);
-    if (value && value.trim()) {
-        el.textContent = value;
-        el.classList.add('filled');
-    } else {
-        el.textContent = placeholder;
-        el.classList.remove('filled');
+        dom.cvDate.innerHTML = `<em class="placeholder-text">Date of Submission: ——</em>`;
+        dom.cvDate.style.color = '';
     }
 }
 
-function escapeHtml(str) {
+function escapeHtml(text) {
     const div = document.createElement('div');
-    div.textContent = str;
+    div.textContent = text;
     return div.innerHTML;
 }
 
-function updateBorderStyle() {
-    const border = $('pageBorder');
-    const style = els.borderStyle.value;
-    const color = els.borderColor.value;
-
-    border.className = 'page-border';
-    border.style.borderColor = color;
-
-    const innerBorder = border.querySelector('.page-content');
-
-    switch (style) {
-        case 'double':
-            border.style.border = `3px double ${color}`;
-            innerBorder.style.border = `1.5px solid ${color}`;
-            break;
-        case 'single':
-            border.style.border = `2px solid ${color}`;
-            border.classList.add('single');
-            innerBorder.style.border = 'none';
-            break;
-        case 'thick':
-            border.style.border = `4px solid ${color}`;
-            border.classList.add('thick');
-            innerBorder.style.border = 'none';
-            break;
-        case 'none':
-            border.style.border = 'none';
-            border.classList.add('no-border');
-            innerBorder.style.border = 'none';
-            break;
-    }
-}
-
-// Listen for all input changes
-const allInputs = document.querySelectorAll('input, select');
+// Attach event listeners for live preview
+const allInputs = document.querySelectorAll('.form-card input, .form-card select');
 allInputs.forEach(input => {
     input.addEventListener('input', updatePreview);
     input.addEventListener('change', updatePreview);
 });
 
-// ============ FIELD HELPERS ============
-function clearField(id) {
-    const el = $(id);
-    el.value = '';
-    el.focus();
-
-    // If clearing subject, also clear code and semester
-    if (id === 'subjectName') {
-        els.courseCode.value = '';
-        els.semester.value = '';
-    }
-    if (id === 'courseCode') {
-        els.subjectName.value = '';
-        els.semester.value = '';
-    }
-    if (id === 'teacherName') {
-        els.designation.value = '';
-    }
-
-    updatePreview();
-}
-
-function clearAll() {
-    allInputs.forEach(input => {
-        if (input.type === 'color') return;
-        if (input.id === 'teacherDept' || input.id === 'studentDept') {
-            input.value = 'Department Of Business Administration';
-            return;
-        }
-        if (input.id === 'borderStyle') {
-            input.value = 'double';
-            return;
-        }
-        if (input.id === 'printSize') {
-            input.value = 'A4';
-            return;
-        }
-        if (input.tagName === 'SELECT') {
-            input.selectedIndex = 0;
-            return;
-        }
-        input.value = '';
-    });
-    updatePreview();
-    showToast('All fields cleared');
-}
-
 // ============ ADVANCED SETTINGS ============
 function toggleAdvanced() {
-    const body = $('advancedBody');
-    const arrow = $('advancedArrow');
+    const body = document.getElementById('advancedBody');
+    const arrow = document.getElementById('advancedArrow');
     body.classList.toggle('open');
     arrow.classList.toggle('open');
 }
 
-// ============ REFRESH PREVIEW ============
-function refreshPreview() {
-    updatePreview();
-    showToast('Preview refreshed');
+// Border toggles
+document.getElementById('toggleBorder').addEventListener('change', updateBorder);
+document.getElementById('borderStyle').addEventListener('change', updateBorder);
+document.getElementById('borderWidth').addEventListener('change', updateBorder);
+document.getElementById('borderColor').addEventListener('input', updateBorder);
+document.getElementById('borderRadius').addEventListener('change', updateBorder);
+document.getElementById('borderPadding').addEventListener('change', updateBorder);
+
+function updateBorder() {
+    const show = document.getElementById('toggleBorder').checked;
+    const optionsDiv = document.getElementById('borderOptions');
+
+    if (!show) {
+        dom.pageBorder.style.border = 'none';
+        optionsDiv.style.opacity = '0.4';
+        optionsDiv.style.pointerEvents = 'none';
+    } else {
+        const style = document.getElementById('borderStyle').value;
+        const width = document.getElementById('borderWidth').value;
+        const color = document.getElementById('borderColor').value;
+        const radius = document.getElementById('borderRadius').value;
+        const padding = document.getElementById('borderPadding').value;
+
+        dom.pageBorder.style.border = `${width} ${style} ${color}`;
+        dom.pageBorder.style.borderRadius = radius;
+        dom.pageBorder.style.padding = padding;
+        optionsDiv.style.opacity = '1';
+        optionsDiv.style.pointerEvents = 'auto';
+    }
+
+    document.getElementById('borderColorLabel').textContent = document.getElementById('borderColor').value;
 }
 
-// ============ TOAST ============
-function showToast(message) {
-    const toast = $('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), 2500);
+// Line toggles
+document.getElementById('toggleLine').addEventListener('change', updateLine);
+document.getElementById('lineStyle').addEventListener('change', updateLine);
+document.getElementById('lineWidth').addEventListener('change', updateLine);
+document.getElementById('lineColor').addEventListener('input', updateLine);
+document.getElementById('lineLength').addEventListener('change', updateLine);
+
+function updateLine() {
+    const show = document.getElementById('toggleLine').checked;
+    const optionsDiv = document.getElementById('lineOptions');
+
+    if (!show) {
+        dom.cvLineContainer.style.display = 'none';
+        optionsDiv.style.opacity = '0.4';
+        optionsDiv.style.pointerEvents = 'none';
+    } else {
+        dom.cvLineContainer.style.display = 'flex';
+        const style = document.getElementById('lineStyle').value;
+        const width = document.getElementById('lineWidth').value;
+        const color = document.getElementById('lineColor').value;
+        const length = document.getElementById('lineLength').value;
+
+        dom.cvSeparatorLine.style.borderTop = `${width} ${style} ${color}`;
+        dom.cvSeparatorLine.style.width = length;
+        optionsDiv.style.opacity = '1';
+        optionsDiv.style.pointerEvents = 'auto';
+    }
+
+    document.getElementById('lineColorLabel').textContent = document.getElementById('lineColor').value;
 }
+
+// Element toggles
+document.getElementById('toggleLogo').addEventListener('change', function () {
+    dom.cvLogo.style.display = this.checked ? 'block' : 'none';
+});
+
+document.getElementById('toggleCollege').addEventListener('change', function () {
+    dom.cvCollege.style.display = this.checked ? 'block' : 'none';
+});
+
+document.getElementById('toggleDeptTitle').addEventListener('change', function () {
+    dom.cvDeptTitle.style.display = this.checked ? 'block' : 'none';
+});
+
+document.getElementById('toggleAssignOn').addEventListener('change', function () {
+    dom.cvAssignOn.style.display = this.checked ? 'block' : 'none';
+});
+
+document.getElementById('toggleBatchRow').addEventListener('change', function () {
+    dom.cvBatchRow.style.display = this.checked ? 'flex' : 'none';
+});
 
 // ============ PDF DOWNLOAD ============
 async function downloadPDF() {
-    showToast('Generating PDF...');
-
-    const element = $('coverPage');
-    const studentName = els.studentName.value.trim() || 'Assignment';
-    const subjectName = els.subjectName.value.trim() || 'Cover';
-    const fileName = `${studentName}_${subjectName}_Cover.pdf`.replace(/\s+/g, '_');
-
-    // Clone the element for PDF generation
-    const clone = element.cloneNode(true);
-    clone.style.transform = 'none';
-    clone.style.width = '210mm';
-    clone.style.minHeight = '297mm';
-    clone.style.boxShadow = 'none';
-
-    // Temporarily add to document
-    const tempDiv = document.createElement('div');
-    tempDiv.style.position = 'fixed';
-    tempDiv.style.left = '-9999px';
-    tempDiv.style.top = '0';
-    tempDiv.appendChild(clone);
-    document.body.appendChild(tempDiv);
-
-    const opt = {
-        margin: 0,
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            width: clone.offsetWidth,
-            height: clone.offsetHeight,
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        }
-    };
+    const btn = document.querySelector('.btn-download');
+    btn.classList.add('loading');
+    btn.textContent = 'Generating...';
 
     try {
-        await html2pdf().set(opt).from(clone).save();
-        showToast('PDF downloaded successfully!');
+        const element = document.getElementById('coverPage');
+
+        // Store original transform
+        const originalTransform = element.style.transform;
+        const originalTransformOrigin = element.style.transformOrigin;
+        element.style.transform = 'none';
+        element.style.transformOrigin = 'top left';
+
+        const opt = {
+            margin: 0,
+            filename: generateFilename(),
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                letterRendering: true,
+                width: element.offsetWidth,
+                height: element.offsetHeight,
+            },
+            jsPDF: {
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
+            }
+        };
+
+        await html2pdf().set(opt).from(element).save();
+
+        // Restore transform
+        element.style.transform = originalTransform;
+        element.style.transformOrigin = originalTransformOrigin;
     } catch (err) {
-        console.error('PDF generation error:', err);
-        showToast('Error generating PDF. Please try again.');
+        console.error('PDF generation failed:', err);
+        alert('PDF generation failed. Please try again.');
     } finally {
-        document.body.removeChild(tempDiv);
+        btn.classList.remove('loading');
+        btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
     }
+}
+
+function generateFilename() {
+    const student = dom.studentName.value.trim() || 'Cover';
+    const subject = dom.subjectName.value.trim() || 'Assignment';
+    const clean = (str) => str.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '_');
+    return `${clean(student)}_${clean(subject)}_Cover.pdf`;
 }
 
 // ============ PRINT ============
 function printCover() {
-    $('printModal').classList.add('show');
-    $('modalPrintSize').value = els.printSize.value;
+    const printModal = document.getElementById('printModal');
+    const printSizeVal = document.getElementById('printSize').value;
+    document.getElementById('modalPrintSize').value = printSizeVal;
+    printModal.classList.add('active');
 }
 
 function closePrintModal() {
-    $('printModal').classList.remove('show');
+    document.getElementById('printModal').classList.remove('active');
 }
 
 function executePrint() {
     closePrintModal();
 
-    const paperSize = $('modalPrintSize').value;
-    const orientation = $('printOrientation').value;
-    const coverPage = $('coverPage');
+    const size = document.getElementById('modalPrintSize').value;
 
-    // Paper size dimensions in mm
-    const sizes = {
-        'A3': { width: 297, height: 420 },
-        'A4': { width: 210, height: 297 },
-        'A5': { width: 148, height: 210 },
-        'Letter': { width: 215.9, height: 279.4 },
-        'Legal': { width: 215.9, height: 355.6 },
-        'Tabloid': { width: 279.4, height: 431.8 },
-        'Executive': { width: 184.15, height: 266.7 },
+    // Create print-specific style
+    const printStyle = document.createElement('style');
+    printStyle.id = 'dynamic-print-style';
+
+    const sizeMap = {
+        'A3': { width: '297mm', height: '420mm' },
+        'A4': { width: '210mm', height: '297mm' },
+        'A5': { width: '148mm', height: '210mm' },
+        'Letter': { width: '8.5in', height: '11in' },
+        'Legal': { width: '8.5in', height: '14in' },
+        'Tabloid': { width: '11in', height: '17in' },
+        'Executive': { width: '7.25in', height: '10.5in' },
     };
 
-    const size = sizes[paperSize] || sizes['A4'];
-    const w = orientation === 'landscape' ? size.height : size.width;
-    const h = orientation === 'landscape' ? size.width : size.height;
+    const dims = sizeMap[size] || sizeMap['A4'];
 
-    // Create print window
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
+    printStyle.textContent = `
+        @media print {
+            @page {
+                size: ${dims.width} ${dims.height};
+                margin: 0;
+            }
 
-    // Clone styles
-    const styles = document.querySelectorAll('link[rel="stylesheet"], style');
-    let styleHTML = '';
-    styles.forEach(s => {
-        styleHTML += s.outerHTML;
-    });
+            body * {
+                visibility: hidden;
+            }
 
-    // Get the cover page HTML
-    const coverClone = coverPage.cloneNode(true);
-    coverClone.style.transform = 'none';
-    coverClone.style.boxShadow = 'none';
-    coverClone.style.width = w + 'mm';
-    coverClone.style.minHeight = h + 'mm';
-    coverClone.style.margin = '0 auto';
+            #coverPage, #coverPage * {
+                visibility: visible;
+            }
 
-    // Fix inner containers
-    const borderEl = coverClone.querySelector('.page-border');
-    if (borderEl) {
-        borderEl.style.minHeight = h + 'mm';
-    }
-    const contentEl = coverClone.querySelector('.page-content');
-    if (contentEl) {
-        contentEl.style.minHeight = (h - 16) + 'mm';
-    }
+            #coverPage {
+                position: fixed;
+                left: 0;
+                top: 0;
+                width: ${dims.width};
+                height: ${dims.height};
+                transform: none !important;
+                box-shadow: none !important;
+                margin: 0;
+                padding: 0;
+                min-height: ${dims.height};
+            }
 
-    printWindow.document.write(`
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Print Cover Page</title>
-            ${styleHTML}
-            <style>
-                @page {
-                    size: ${w}mm ${h}mm;
-                    margin: 0;
-                }
-                body {
-                    margin: 0;
-                    padding: 0;
-                    background: white;
-                }
-                .a4-page {
-                    transform: none !important;
-                    box-shadow: none !important;
-                    width: ${w}mm !important;
-                    min-height: ${h}mm !important;
-                    margin: 0 !important;
-                }
-                .page-border {
-                    min-height: ${h}mm !important;
-                }
-                .page-content {
-                    min-height: ${h - 16}mm !important;
-                }
-                .header, .form-panel, .preview-header, .action-bar,
-                .advanced-card, .modal-overlay, .toast {
-                    display: none !important;
-                }
-            </style>
-        </head>
-        <body>
-            ${coverClone.outerHTML}
-        </body>
-        </html>
-    `);
+            .a4-page {
+                width: ${dims.width} !important;
+                min-height: ${dims.height} !important;
+                box-shadow: none !important;
+                transform: none !important;
+            }
 
-    printWindow.document.close();
+            .page-border {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                bottom: 10px;
+            }
 
-    // Wait for images to load then print
-    printWindow.onload = function() {
+            .header, .form-panel, .preview-topbar, .action-bar, .modal-overlay, .advanced-card {
+                display: none !important;
+            }
+        }
+    `;
+
+    document.head.appendChild(printStyle);
+
+    // Store and reset transform
+    const coverPage = document.getElementById('coverPage');
+    const originalTransform = coverPage.style.transform;
+    coverPage.style.transform = 'none';
+
+    setTimeout(() => {
+        window.print();
+
+        // Restore after print
         setTimeout(() => {
-            printWindow.print();
-            printWindow.close();
+            coverPage.style.transform = originalTransform;
+            const dynStyle = document.getElementById('dynamic-print-style');
+            if (dynStyle) dynStyle.remove();
         }, 500);
-    };
-
-    showToast(`Printing in ${paperSize} ${orientation}...`);
+    }, 200);
 }
 
 // Close modal on overlay click
-$('printModal').addEventListener('click', function(e) {
-    if (e.target === this) closePrintModal();
-});
-
-// Close modal on Escape
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
+document.getElementById('printModal').addEventListener('click', function (e) {
+    if (e.target === this) {
         closePrintModal();
-        document.querySelectorAll('.autocomplete-list').forEach(l => l.classList.remove('show'));
     }
 });
 
-// ============ INITIAL PREVIEW ============
+// ============ INITIAL SETUP ============
 updatePreview();
+updateBorder();
+updateLine();
 
-// ============ SAVE/RESTORE FORM DATA ============
-function saveFormData() {
-    const data = {};
-    allInputs.forEach(input => {
-        if (input.id) data[input.id] = input.value;
-    });
-    try {
-        localStorage.setItem('dccCoverData', JSON.stringify(data));
-    } catch(e) {}
+// Handle responsive zoom label
+function updateZoomLabel() {
+    const width = window.innerWidth;
+    const label = document.getElementById('zoomLabel');
+    if (width <= 600) {
+        label.textContent = '40% zoom';
+    } else if (width <= 1100) {
+        label.textContent = '55% zoom';
+    } else {
+        label.textContent = '75% zoom';
+    }
 }
 
-function restoreFormData() {
-    try {
-        const data = JSON.parse(localStorage.getItem('dccCoverData'));
-        if (!data) return;
-        allInputs.forEach(input => {
-            if (input.id && data[input.id] !== undefined && data[input.id] !== '') {
-                // Don't restore defaults that might be stale
-                if (input.id === 'borderStyle' || input.id === 'printSize' || input.id === 'borderColor') return;
-                input.value = data[input.id];
-            }
-        });
-        updatePreview();
-    } catch(e) {}
-}
+updateZoomLabel();
+window.addEventListener('resize', updateZoomLabel);
 
-// Save on input changes
-allInputs.forEach(input => {
-    input.addEventListener('input', saveFormData);
-    input.addEventListener('change', saveFormData);
+// Prevent form submission on enter
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && e.target.tagName === 'INPUT') {
+        e.preventDefault();
+    }
 });
 
-// Restore on load
-restoreFormData();
+console.log('DCC Cover Generator loaded successfully.');
