@@ -568,16 +568,29 @@ async function downloadPDF() {
         // same image both for the on-screen preview AND the PDF, and lets us
         // size the PDF page to match the image pixel-for-pixel, so there's
         // never a mismatch or a stray extra page.
-       const canvas = await html2canvas(element, {
-    scale: 2,
+      const element = document.getElementById('your-a4-page-id'); 
+
+const canvas = await html2canvas(element, {
+    scale: 2, // Keeps the resolution high for crisp text
     useCORS: true,
-    logging: false,
-    letterRendering: true,
-    backgroundColor: '#ffffff',
-    // Add these two lines to fix the blank render issue:
+    scrollY: 0,
     scrollX: 0,
-    scrollY: 0
+    // Add the onclone function below:
+    onclone: (clonedDocument) => {
+        // Find the cloned version of your A4 page
+        const clonedElement = clonedDocument.getElementById('your-a4-page-id'); 
+        
+        if (clonedElement) {
+            // Force the cloned element to its full, unscaled size
+            clonedElement.style.transform = 'none';
+            clonedElement.style.width = '210mm'; 
+            clonedElement.style.height = '297mm'; 
+            clonedElement.style.margin = '0'; 
+        }
+    }
 });
+
+// Continue with your jsPDF generation...
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
