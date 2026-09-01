@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Merriweather:ital,wght@0,400;0,700;1,400&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
     <!-- HEADER -->
@@ -478,7 +479,7 @@
         <div class="modal-card modal-card-pdf">
             <h3>Your Cover Page is Ready</h3>
             <div class="pdf-preview-frame-wrap">
-                <iframe id="pdfPreviewFrame" title="PDF preview"></iframe>
+                <img id="pdfPreviewImage" alt="PDF preview" style="width: 100%; height: auto; border-radius: 6px;">
             </div>
             <div class="modal-actions">
                 <button class="btn btn-clear" onclick="closePdfPreview()">Close</button>

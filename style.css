@@ -1105,6 +1105,23 @@ select:focus {
     }
 }
 
+.a4-wrapper {
+  /* Allows scrolling if the scaled element is still too wide */
+  overflow-x: auto; 
+  display: flex;
+  justify-content: center;
+}
+
+@media (max-width: 768px) {
+  .a4-page {
+    /* Scales the document down to 60% of its size */
+    transform: scale(0.6); 
+    transform-origin: top center;
+    /* Adjust margin to account for the scaled height */
+    margin-bottom: -40%; 
+  }
+}
+
 /* ============ LOADING STATE ============ */
 .btn.loading {
     pointer-events: none;

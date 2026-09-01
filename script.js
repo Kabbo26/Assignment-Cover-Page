@@ -568,13 +568,16 @@ async function downloadPDF() {
         // same image both for the on-screen preview AND the PDF, and lets us
         // size the PDF page to match the image pixel-for-pixel, so there's
         // never a mismatch or a stray extra page.
-        const canvas = await html2canvas(element, {
-            scale: 2,
-            useCORS: true,
-            logging: false,
-            letterRendering: true,
-            backgroundColor: '#ffffff',
-        });
+       const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    letterRendering: true,
+    backgroundColor: '#ffffff',
+    // Add these two lines to fix the blank render issue:
+    scrollX: 0,
+    scrollY: 0
+});
 
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
@@ -584,7 +587,7 @@ async function downloadPDF() {
         // unit-conversion mismatch — the previous version's blank-corner and
         // stray-second-page bugs both came from the page size and the image
         // size being computed differently.
-        const { jsPDF } = window.jspdf;
+        const jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF;
         const pdf = new jsPDF({
             unit: 'px',
             format: [canvas.width, canvas.height],
