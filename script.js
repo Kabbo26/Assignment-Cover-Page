@@ -1,43 +1,36 @@
 // ============ DATA ============
 const subjects = [
-    // ============ 1st semester ============
     { name: "Introduction to Business", code: "510101" },
     { name: "Business Communication & Report Writing", code: "510103" },
     { name: "Business Accounting", code: "510105" },
     { name: "Business Mathematics", code: "510107" },
     { name: "History of Emergence of Independent Bangladesh (In Bangla)", code: "211501" },
-      // ============ 2nd semester ============
     { name: "Principles of Management", code: "510109" },
     { name: "Taxation in Bangladesh", code: "510111" },
     { name: "Computer and Information Technology", code: "510113" },
     { name: "Theory and Practice of Banking", code: "510115" },
     { name: "Micro Economics", code: "510117" },
-      // ============ 3rd semester ============
     { name: "Business Statistics-I", code: "520119" },
     { name: "Organization Behavior", code: "520121" },
     { name: "Legal Environment of Business", code: "520123" },
     { name: "E-Commerce", code: "520125" },
     { name: "Macro Economics", code: "520127" },
-     // ============ 4th semester ============
     { name: "Risk Management & Insurance", code: "520129" },
     { name: "Business Statistics-II", code: "520131" },
     { name: "Human Resource Management", code: "520133" },
     { name: "Export-Import Management", code: "520135" },
     { name: "Supply Chain Management", code: "520137" },
-    // ============ 5th semester ============
     { name: "Principles of Finance", code: "530139" },
     { name: "Principles of Marketing", code: "530141" },
     { name: "Cost Accounting", code: "530143" },
     { name: "Tourism & Hospitality Management", code: "530145" },
     { name: "Entrepreneurship & Small Business Management", code: "530147" },
-    // ============ 6th semester ============
     { name: "Financial Management", code: "530149" },
     { name: "Marketing Management", code: "530151" },
     { name: "Management Accounting", code: "530153" },
     { name: "Enterprise Resource Planning", code: "530155" },
     { name: "Research Methodology", code: "530157" },
     { name: "Viva-Voce", code: "530158" },
-    // ============ Major in Accounting ============
     { name: "Intermediate Accounting", code: "542501" },
     { name: "Advanced Accounting", code: "542503" },
     { name: "Working Capital Management", code: "542505" },
@@ -49,7 +42,6 @@ const subjects = [
     { name: "Accounting Theory", code: "542517" },
     { name: "Accounting for Government and Non-Profit Organization and NGO", code: "542519" },
     { name: "Internship / Project Paper & Defence", code: "542520" },
-    // ============ Major in Management ============
     { name: "Organization Development", code: "542601" },
     { name: "Global Management", code: "542603" },
     { name: "Conflict Management", code: "542605" },
@@ -61,7 +53,6 @@ const subjects = [
     { name: "Strategic Management", code: "542617" },
     { name: "Total Quality Management", code: "542619" },
     { name: "Internship / Project Paper & Defence", code: "542620" },
-    // ============ Major in Marketing ============
     { name: "Customer Relationship Management", code: "542301" },
     { name: "Customer Behavior", code: "542303" },
     { name: "Brand Management", code: "542305" },
@@ -73,7 +64,6 @@ const subjects = [
     { name: "International Economics", code: "542317" },
     { name: "Agricultural & Food Marketing", code: "542319" },
     { name: "Internship / Project Paper & Defence", code: "542320" },
-     // ============ Major in Finance ============
     { name: "Corporate Finance", code: "542401" },
     { name: "Working Capital Management", code: "542403" },
     { name: "Bank Management", code: "542405" },
@@ -85,7 +75,6 @@ const subjects = [
     { name: "Security Analysis and Portfolio Management", code: "542417" },
     { name: "Real Estate Finance", code: "542419" },
     { name: "Internship / Project Paper & Defence", code: "542420" },
-
 ];
 
 const teachers = [
@@ -106,346 +95,437 @@ const teachers = [
     { name: "Ms Afroza Rahmat Rinky", designation: "Lecturer" },
 ];
 
-// ============ UPDATE PREVIEW ============
-function upd() {
-    const subject = document.getElementById("f_subject").value.trim();
-    const course = document.getElementById("f_course").value.trim();
-    const teacher = document.getElementById("f_teacher").value.trim();
-    const designation = document.getElementById("f_designation").value;
-    const tdept = document.getElementById("f_tdept").value.trim();
-    const sname = document.getElementById("f_sname").value.trim();
-    const roll = document.getElementById("f_roll").value.trim();
-    const sec = document.getElementById("f_sec").value.trim();
-    const batch = document.getElementById("f_batch").value.trim();
-    const sem = document.getElementById("f_sem").value.trim();
-    const sdept = document.getElementById("f_sdept").value.trim();
-    const date = document.getElementById("f_date").value;
-    const topic = document.getElementById("f_topic").value.trim();
-    const college = document.getElementById("f_college").value.trim();
-    const fontSize = document.getElementById("f_fontsize").value;
-    const borderStyle = document.getElementById("f_border").value;
+// Semester mapping based on course code prefix
+const semesterMap = {
+    '5101': '01', '2115': '01',
+    '5101': '02',
+    '5201': '03',
+    '5201': '04',
+    '5301': '05',
+    '5301': '06',
+};
 
-    // Update college name
-    const pCollege = document.getElementById("p_college");
-    pCollege.textContent = college || "DHAKA CITY COLLEGE";
-
-    // Update topic/subject
-    const pTopic = document.getElementById("p_topic");
-    if (topic) {
-        pTopic.innerHTML = topic;
-        pTopic.classList.add("filled");
-        pTopic.classList.remove("italic");
-    } else if (subject) {
-        pTopic.innerHTML = subject;
-        pTopic.classList.add("filled");
-        pTopic.classList.remove("italic");
-    } else {
-        pTopic.innerHTML = "<em>ASSIGNMENT TITLE</em>";
-        pTopic.classList.remove("filled");
-        pTopic.classList.add("italic");
+function getSemesterFromCode(code) {
+    if (!code || code.length < 6) return '';
+    const prefix = code.substring(0, 4);
+    const num = parseInt(code.substring(4));
+    
+    // 1st semester: 510101-510107, 211501
+    if ((prefix === '5101' && num >= 1 && num <= 7) || code === '211501') return '01';
+    // 2nd semester: 510109-510117
+    if (prefix === '5101' && num >= 9 && num <= 17) return '02';
+    // 3rd semester: 520119-520127
+    if (prefix === '5201' && num >= 19 && num <= 27) return '03';
+    // 4th semester: 520129-520137
+    if (prefix === '5201' && num >= 29 && num <= 37) return '04';
+    // 5th semester: 530139-530147
+    if (prefix === '5301' && num >= 39 && num <= 47) return '05';
+    // 6th semester: 530149-530158
+    if (prefix === '5301' && num >= 49 && num <= 58) return '06';
+    // Major subjects: 7th & 8th semester
+    if (prefix === '5425' || prefix === '5426' || prefix === '5423' || prefix === '5424') {
+        if (num <= 10) return '07';
+        return '08';
     }
-
-    // Update course code
-    const pCourse = document.getElementById("p_course");
-    if (course) {
-        pCourse.innerHTML = "Course Code : " + course;
-        pCourse.classList.add("filled");
-    } else {
-        pCourse.innerHTML = "<em>Course Code : —</em>";
-        pCourse.classList.remove("filled");
-    }
-
-    // Update teacher
-    const pTeacher = document.getElementById("p_teacher");
-    if (teacher) {
-        pTeacher.innerHTML = teacher;
-        pTeacher.classList.add("filled");
-    } else {
-        pTeacher.innerHTML = "<em>Teacher Name</em>";
-        pTeacher.classList.remove("filled");
-    }
-
-    // Update designation
-    const pDesignation = document.getElementById("p_designation");
-    if (designation) {
-        pDesignation.innerHTML = designation;
-        pDesignation.classList.add("filled");
-    } else {
-        pDesignation.innerHTML = "<em>Designation</em>";
-        pDesignation.classList.remove("filled");
-    }
-
-    // Update teacher dept & college
-    document.getElementById("p_tdept").textContent = tdept || "Department Of Business Administration";
-    document.getElementById("p_tcollege").textContent = college || "Dhaka City College";
-
-    // Update student name
-    const pSname = document.getElementById("p_sname");
-    if (sname) {
-        pSname.innerHTML = sname;
-        pSname.classList.add("filled");
-    } else {
-        pSname.innerHTML = "<em>Student Name</em>";
-        pSname.classList.remove("filled");
-    }
-
-    // Update roll, section, batch, semester
-    document.getElementById("p_roll").textContent = "Roll : " + (roll || "—");
-    document.getElementById("p_sec").textContent = "Section : " + (sec || "—");
-    document.getElementById("p_batch").textContent = "Batch : " + (batch || "—");
-    document.getElementById("p_sem").textContent = "Semester : " + (sem || "—");
-
-    // Update student dept & college
-    document.getElementById("p_sdept").textContent = sdept || "Department Of Business Administration";
-    document.getElementById("p_scollege").textContent = college || "Dhaka City College";
-
-    // Update date
-    const pDate = document.getElementById("p_date");
-    if (date) {
-        const dateObj = new Date(date);
-        const options = { year: 'numeric', month: 'long', day: 'numeric' };
-        const formatted = dateObj.toLocaleDateString('en-US', options);
-        pDate.innerHTML = "Date Of Submission : " + formatted;
-        pDate.classList.add("filled");
-    } else {
-        pDate.innerHTML = "<em>Date Of Submission : —</em>";
-        pDate.classList.remove("filled");
-    }
-
-    // Update font size
-    const coverPage = document.getElementById("coverPage");
-    coverPage.classList.remove("font-small", "font-medium", "font-large");
-    coverPage.classList.add("font-" + fontSize);
-
-    // Update border
-    const coverBorder = document.getElementById("coverBorder");
-    coverBorder.classList.remove("single-border", "no-border");
-    if (borderStyle === "single") {
-        coverBorder.classList.add("single-border");
-    } else if (borderStyle === "none") {
-        coverBorder.classList.add("no-border");
-    }
+    return '';
 }
 
-// ============ CLEAR INDIVIDUAL FIELD ============
-function clearField(id) {
-    const el = document.getElementById(id);
-    el.value = "";
-    el.classList.remove("valid", "error");
+// ============ DOM ELEMENTS ============
+const $ = id => document.getElementById(id);
 
-    // Close suggestions
-    if (id === "f_subject") {
-        closeSuggestions("subject_suggestions");
-        document.getElementById("f_course").value = "";
-    }
-    if (id === "f_teacher") {
-        closeSuggestions("teacher_suggestions");
-        document.getElementById("f_designation").value = "";
-    }
+const els = {
+    subjectName: $('subjectName'),
+    courseCode: $('courseCode'),
+    assignmentTitle: $('assignmentTitle'),
+    teacherName: $('teacherName'),
+    designation: $('designation'),
+    teacherDept: $('teacherDept'),
+    studentName: $('studentName'),
+    roll: $('roll'),
+    section: $('section'),
+    batch: $('batch'),
+    semester: $('semester'),
+    session: $('session'),
+    studentDept: $('studentDept'),
+    submissionDate: $('submissionDate'),
+    borderStyle: $('borderStyle'),
+    borderColor: $('borderColor'),
+    printSize: $('printSize'),
+};
 
-    upd();
-}
+// ============ AUTOCOMPLETE SETUP ============
+function setupAutocomplete(input, listEl, data, type) {
+    let activeIndex = -1;
 
-// ============ CLEAR ALL ============
-function clrAll() {
-    clearCourse();
-    clearTeacher();
+    input.addEventListener('input', function() {
+        const val = this.value.toLowerCase().trim();
+        listEl.innerHTML = '';
+        activeIndex = -1;
 
-    const fields = ["f_sname", "f_roll", "f_sec", "f_batch", "f_sem", "f_date", "f_topic"];
-    fields.forEach(function(id) {
-        const e = document.getElementById(id);
-        if (e) {
-            e.value = "";
-            e.classList.remove("valid", "error");
-            e.style.borderColor = "";
+        if (!val) {
+            listEl.classList.remove('show');
+            return;
+        }
+
+        let filtered;
+        if (type === 'subject') {
+            filtered = data.filter(s => s.name.toLowerCase().includes(val));
+        } else if (type === 'code') {
+            filtered = data.filter(s => s.code.includes(val) || s.name.toLowerCase().includes(val));
+        } else if (type === 'teacher') {
+            filtered = data.filter(t => t.name.toLowerCase().includes(val));
+        }
+
+        if (filtered.length === 0) {
+            listEl.classList.remove('show');
+            return;
+        }
+
+        filtered.forEach((item, idx) => {
+            const div = document.createElement('div');
+            div.className = 'autocomplete-item';
+
+            if (type === 'subject') {
+                div.innerHTML = `<div>${highlightMatch(item.name, val)}</div><div class="item-code">Code: ${item.code}</div>`;
+            } else if (type === 'code') {
+                div.innerHTML = `<div>${highlightMatch(item.code, val)}</div><div class="item-code">${item.name}</div>`;
+            } else if (type === 'teacher') {
+                div.innerHTML = `<div>${highlightMatch(item.name, val)}</div><div class="item-designation">${item.designation}</div>`;
+            }
+
+            div.addEventListener('click', () => {
+                if (type === 'subject') {
+                    els.subjectName.value = item.name;
+                    els.courseCode.value = item.code;
+                    const sem = getSemesterFromCode(item.code);
+                    if (sem) els.semester.value = sem;
+                } else if (type === 'code') {
+                    els.courseCode.value = item.code;
+                    els.subjectName.value = item.name;
+                    const sem = getSemesterFromCode(item.code);
+                    if (sem) els.semester.value = sem;
+                } else if (type === 'teacher') {
+                    els.teacherName.value = item.name;
+                    els.designation.value = item.designation;
+                }
+                listEl.classList.remove('show');
+                updatePreview();
+            });
+
+            listEl.appendChild(div);
+        });
+
+        listEl.classList.add('show');
+    });
+
+    input.addEventListener('keydown', function(e) {
+        const items = listEl.querySelectorAll('.autocomplete-item');
+        if (!listEl.classList.contains('show') || items.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = Math.min(activeIndex + 1, items.length - 1);
+            updateActiveItem(items, activeIndex);
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = Math.max(activeIndex - 1, 0);
+            updateActiveItem(items, activeIndex);
+        } else if (e.key === 'Enter') {
+            e.preventDefault();
+            if (activeIndex >= 0 && items[activeIndex]) {
+                items[activeIndex].click();
+            }
+        } else if (e.key === 'Escape') {
+            listEl.classList.remove('show');
         }
     });
 
-    document.getElementById("f_tdept").value = "Department Of Business Administration";
-    document.getElementById("f_sdept").value = "Department Of Business Administration";
-
-    upd();
-}
-
-function clearCourse() {
-    document.getElementById("f_subject").value = "";
-    document.getElementById("f_course").value = "";
-    closeSuggestions("subject_suggestions");
-}
-
-function clearTeacher() {
-    document.getElementById("f_teacher").value = "";
-    document.getElementById("f_designation").value = "";
-    closeSuggestions("teacher_suggestions");
-}
-
-// ============ SUGGESTIONS ============
-function closeSuggestions(containerId) {
-    document.getElementById(containerId).innerHTML = "";
-}
-
-// Subject suggestions
-document.getElementById("f_subject").addEventListener("input", function() {
-    const val = this.value.trim().toLowerCase();
-    const container = document.getElementById("subject_suggestions");
-
-    if (val.length < 1) {
-        container.innerHTML = "";
-        return;
-    }
-
-    const matches = subjects.filter(s =>
-        s.name.toLowerCase().includes(val) || s.code.includes(val)
-    );
-
-    if (matches.length === 0) {
-        container.innerHTML = "";
-        return;
-    }
-
-    let html = '<div class="suggestions-list">';
-    matches.forEach(s => {
-        html += `<div class="suggestion-item" onclick="selectSubject('${s.name}', '${s.code}')">${s.name} <span style="color:#888;font-size:11px;">(${s.code})</span></div>`;
+    input.addEventListener('focus', function() {
+        if (this.value.trim() && listEl.children.length > 0) {
+            listEl.classList.add('show');
+        }
     });
-    html += '</div>';
-    container.innerHTML = html;
-});
-
-function selectSubject(name, code) {
-    document.getElementById("f_subject").value = name;
-    document.getElementById("f_course").value = code;
-    closeSuggestions("subject_suggestions");
-    upd();
 }
 
-// Teacher suggestions
-document.getElementById("f_teacher").addEventListener("input", function() {
-    const val = this.value.trim().toLowerCase();
-    const container = document.getElementById("teacher_suggestions");
-
-    if (val.length < 1) {
-        container.innerHTML = "";
-        return;
+function updateActiveItem(items, idx) {
+    items.forEach(item => item.classList.remove('active'));
+    if (items[idx]) {
+        items[idx].classList.add('active');
+        items[idx].scrollIntoView({ block: 'nearest' });
     }
+}
 
-    const matches = teachers.filter(t =>
-        t.name.toLowerCase().includes(val)
-    );
+function highlightMatch(text, query) {
+    const regex = new RegExp(`(${escapeRegex(query)})`, 'gi');
+    return text.replace(regex, '<strong style="color:#4f46e5">$1</strong>');
+}
 
-    if (matches.length === 0) {
-        container.innerHTML = "";
-        return;
-    }
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
 
-    let html = '<div class="suggestions-list">';
-    matches.forEach(t => {
-        html += `<div class="suggestion-item" onclick="selectTeacher('${t.name}', '${t.designation}')">${t.name} <span style="color:#888;font-size:11px;">(${t.designation})</span></div>`;
+// Close autocomplete on outside click
+document.addEventListener('click', function(e) {
+    document.querySelectorAll('.autocomplete-list').forEach(list => {
+        if (!list.parentElement.contains(e.target)) {
+            list.classList.remove('show');
+        }
     });
-    html += '</div>';
-    container.innerHTML = html;
 });
 
-function selectTeacher(name, designation) {
-    document.getElementById("f_teacher").value = name;
-    document.getElementById("f_designation").value = designation;
-    closeSuggestions("teacher_suggestions");
-    upd();
+// Initialize autocompletes
+setupAutocomplete(els.subjectName, $('subjectList'), subjects, 'subject');
+setupAutocomplete(els.courseCode, $('codeList'), subjects, 'code');
+setupAutocomplete(els.teacherName, $('teacherList'), teachers, 'teacher');
+
+// ============ LIVE PREVIEW UPDATE ============
+function updatePreview() {
+    // Assignment title
+    const titleEl = $('cvAssignmentTitle');
+    if (els.assignmentTitle.value.trim()) {
+        titleEl.innerHTML = `<em>${escapeHtml(els.assignmentTitle.value)}</em>`;
+        titleEl.classList.add('filled');
+    } else {
+        titleEl.innerHTML = '<em>ASSIGNMENT TITLE</em>';
+        titleEl.classList.remove('filled');
+    }
+
+    // Course name
+    updatePlaceholder('cvCourseName', els.subjectName.value, 'Name Of The Course');
+
+    // Course code
+    updatePlaceholder('cvCourseCode', els.courseCode.value, '——');
+
+    // Batch
+    updatePlaceholder('cvBatch', els.batch.value, '—');
+
+    // Semester
+    updatePlaceholder('cvSemester', els.semester.value, '—');
+
+    // Session
+    updatePlaceholder('cvSession', els.session.value, '——');
+    updatePlaceholder('cvSessionBottom', els.session.value, '——');
+
+    // Teacher name
+    const teacherEl = $('cvTeacherName');
+    if (els.teacherName.value.trim()) {
+        teacherEl.innerHTML = `<em>${escapeHtml(els.teacherName.value)}</em>`;
+        teacherEl.classList.add('filled');
+    } else {
+        teacherEl.innerHTML = "<em>TEACHER'S NAME</em>";
+        teacherEl.classList.remove('filled');
+    }
+
+    // Designation
+    const desigEl = $('cvDesignation');
+    if (els.designation.value) {
+        desigEl.innerHTML = `<em>${escapeHtml(els.designation.value)}</em>`;
+        desigEl.classList.add('filled');
+    } else {
+        desigEl.innerHTML = '<em>Designation</em>';
+        desigEl.classList.remove('filled');
+    }
+
+    // Department text on cover
+    const deptText = els.teacherDept.value || 'Business Administration';
+    // Extract department name for italic display
+    const deptShort = deptText.replace(/^Department\s*(Of|of)\s*/i, '');
+    document.querySelector('.cv-dept-line').innerHTML = `Department of <em>${escapeHtml(deptShort)}</em>`;
+
+    // Student name
+    const studentEl = $('cvStudentName');
+    if (els.studentName.value.trim()) {
+        studentEl.innerHTML = `<em>${escapeHtml(els.studentName.value)}</em>`;
+        studentEl.classList.add('filled');
+    } else {
+        studentEl.innerHTML = "<em>Student's Name</em>";
+        studentEl.classList.remove('filled');
+    }
+
+    // Roll
+    updatePlaceholder('cvRoll', els.roll.value, '——');
+
+    // Section
+    updatePlaceholder('cvSection', els.section.value, '—');
+
+    // Department header
+    $('cvDepartment').textContent = (els.teacherDept.value || 'DEPARTMENT OF BUSINESS ADMINISTRATION').toUpperCase();
+
+    // Date
+    const dateEl = $('cvDate');
+    if (els.submissionDate.value) {
+        const d = new Date(els.submissionDate.value);
+        const formatted = d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+        dateEl.innerHTML = `<strong>Date of Submission:</strong> ${formatted}`;
+    } else {
+        dateEl.innerHTML = '<strong>Date of Submission:</strong> <span class="cv-placeholder">…………</span>';
+    }
+
+    // Border style
+    updateBorderStyle();
 }
 
-// Close suggestions when clicking outside
-document.addEventListener("click", function(e) {
-    if (!e.target.closest("#f_subject") && !e.target.closest("#subject_suggestions")) {
-        closeSuggestions("subject_suggestions");
+function updatePlaceholder(id, value, placeholder) {
+    const el = $(id);
+    if (value && value.trim()) {
+        el.textContent = value;
+        el.classList.add('filled');
+    } else {
+        el.textContent = placeholder;
+        el.classList.remove('filled');
     }
-    if (!e.target.closest("#f_teacher") && !e.target.closest("#teacher_suggestions")) {
-        closeSuggestions("teacher_suggestions");
+}
+
+function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+function updateBorderStyle() {
+    const border = $('pageBorder');
+    const style = els.borderStyle.value;
+    const color = els.borderColor.value;
+
+    border.className = 'page-border';
+    border.style.borderColor = color;
+
+    const innerBorder = border.querySelector('.page-content');
+
+    switch (style) {
+        case 'double':
+            border.style.border = `3px double ${color}`;
+            innerBorder.style.border = `1.5px solid ${color}`;
+            break;
+        case 'single':
+            border.style.border = `2px solid ${color}`;
+            border.classList.add('single');
+            innerBorder.style.border = 'none';
+            break;
+        case 'thick':
+            border.style.border = `4px solid ${color}`;
+            border.classList.add('thick');
+            innerBorder.style.border = 'none';
+            break;
+        case 'none':
+            border.style.border = 'none';
+            border.classList.add('no-border');
+            innerBorder.style.border = 'none';
+            break;
     }
+}
+
+// Listen for all input changes
+const allInputs = document.querySelectorAll('input, select');
+allInputs.forEach(input => {
+    input.addEventListener('input', updatePreview);
+    input.addEventListener('change', updatePreview);
 });
 
-// ============ ADVANCED SETTINGS TOGGLE ============
+// ============ FIELD HELPERS ============
+function clearField(id) {
+    const el = $(id);
+    el.value = '';
+    el.focus();
+
+    // If clearing subject, also clear code and semester
+    if (id === 'subjectName') {
+        els.courseCode.value = '';
+        els.semester.value = '';
+    }
+    if (id === 'courseCode') {
+        els.subjectName.value = '';
+        els.semester.value = '';
+    }
+    if (id === 'teacherName') {
+        els.designation.value = '';
+    }
+
+    updatePreview();
+}
+
+function clearAll() {
+    allInputs.forEach(input => {
+        if (input.type === 'color') return;
+        if (input.id === 'teacherDept' || input.id === 'studentDept') {
+            input.value = 'Department Of Business Administration';
+            return;
+        }
+        if (input.id === 'borderStyle') {
+            input.value = 'double';
+            return;
+        }
+        if (input.id === 'printSize') {
+            input.value = 'A4';
+            return;
+        }
+        if (input.tagName === 'SELECT') {
+            input.selectedIndex = 0;
+            return;
+        }
+        input.value = '';
+    });
+    updatePreview();
+    showToast('All fields cleared');
+}
+
+// ============ ADVANCED SETTINGS ============
 function toggleAdvanced() {
-    const body = document.getElementById("advancedBody");
-    const arrow = document.getElementById("advancedArrow");
-
-    body.classList.toggle("show");
-    arrow.classList.toggle("rotated");
+    const body = $('advancedBody');
+    const arrow = $('advancedArrow');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
 }
 
-function markError(id) {
-    const el = document.getElementById(id);
-    el.style.borderColor = "#e53935";
-    el.classList.add("error");
-
-    setTimeout(() => {
-        el.style.borderColor = "";
-        el.classList.remove("error");
-    }, 3000);
+// ============ REFRESH PREVIEW ============
+function refreshPreview() {
+    updatePreview();
+    showToast('Preview refreshed');
 }
 
-// ============ DOWNLOAD PDF (MOBILE/DESKTOP FIXED) ============
+// ============ TOAST ============
+function showToast(message) {
+    const toast = $('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
+
+// ============ PDF DOWNLOAD ============
 async function downloadPDF() {
-    // 1. Validation
-    const sname = document.getElementById("f_sname").value.trim();
-    const roll = document.getElementById("f_roll").value.trim();
-    const sec = document.getElementById("f_sec").value.trim();
-    const batch = document.getElementById("f_batch").value.trim();
-    const date = document.getElementById("f_date").value;
+    showToast('Generating PDF...');
 
-    let valid = true;
+    const element = $('coverPage');
+    const studentName = els.studentName.value.trim() || 'Assignment';
+    const subjectName = els.subjectName.value.trim() || 'Cover';
+    const fileName = `${studentName}_${subjectName}_Cover.pdf`.replace(/\s+/g, '_');
 
-    if (!sname) { markError("f_sname"); valid = false; }
-    if (!roll) { markError("f_roll"); valid = false; }
-    if (!sec) { markError("f_sec"); valid = false; }
-    if (!batch) { markError("f_batch"); valid = false; }
-    if (!date) { markError("f_date"); valid = false; }
+    // Clone the element for PDF generation
+    const clone = element.cloneNode(true);
+    clone.style.transform = 'none';
+    clone.style.width = '210mm';
+    clone.style.minHeight = '297mm';
+    clone.style.boxShadow = 'none';
 
-    if (!valid) {
-        alert("Please fill in all required fields marked with *");
-        return;
-    }
+    // Temporarily add to document
+    const tempDiv = document.createElement('div');
+    tempDiv.style.position = 'fixed';
+    tempDiv.style.left = '-9999px';
+    tempDiv.style.top = '0';
+    tempDiv.appendChild(clone);
+    document.body.appendChild(tempDiv);
 
-    // 2. Loading State
-    const btn = document.getElementById("downloadBtn");
-    const origText = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
-    btn.disabled = true;
-
-    const originalElement = document.getElementById("coverPage");
-
-    // 3. FIX: Create an invisible off-screen container.
-    // This stops mobile scroll positions from cutting off the canvas
-    const cloneContainer = document.createElement("div");
-    cloneContainer.style.position = "fixed"; // Fixed positioning avoids scroll calculations
-    cloneContainer.style.top = "0";
-    cloneContainer.style.left = "0";
-    cloneContainer.style.width = "595px";
-    cloneContainer.style.height = "842px";
-    cloneContainer.style.zIndex = "-9999"; 
-    cloneContainer.style.background = "#ffffff";
-
-    // 4. FIX: Clone the cover page to strip away the mobile live-preview "scale()" transforms
-    const clone = originalElement.cloneNode(true);
-    clone.style.transform = "none";
-    clone.style.margin = "0";
-    
-    cloneContainer.appendChild(clone);
-    document.body.appendChild(cloneContainer);
-
-    const fileName = sname ? "DCC_" + sname.replace(/\s+/g, "_") + ".pdf" : "DCC_Cover_Page.pdf";
-
-    // 5. PDF Options
     const opt = {
         margin: 0,
         filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
             scale: 2,
-            useCORS: true,       // Critical for the Wikipedia Logo
+            useCORS: true,
             allowTaint: true,
-            scrollY: 0,          // CRITICAL FIX: Ignores mobile scrolling
-            scrollX: 0,
-            windowWidth: 595,
-            windowHeight: 842
+            logging: false,
+            width: clone.offsetWidth,
+            height: clone.offsetHeight,
         },
         jsPDF: {
             unit: 'mm',
@@ -454,142 +534,178 @@ async function downloadPDF() {
         }
     };
 
-    // 6. Generate PDF from the pristine clone
     try {
         await html2pdf().set(opt).from(clone).save();
-    } catch (error) {
-        console.error("PDF generation failed:", error);
-        alert("An error occurred during download. If you are on a strict mobile browser, use the 'Print' button to save as PDF.");
+        showToast('PDF downloaded successfully!');
+    } catch (err) {
+        console.error('PDF generation error:', err);
+        showToast('Error generating PDF. Please try again.');
     } finally {
-        // Clean up the clone and reset button
-        document.body.removeChild(cloneContainer);
-        btn.innerHTML = origText;
-        btn.disabled = false;
+        document.body.removeChild(tempDiv);
     }
 }
 
 // ============ PRINT ============
 function printCover() {
-    const coverPage = document.getElementById("coverPage");
-    const originalTransform = coverPage.style.transform;
-    coverPage.style.transform = "none";
+    $('printModal').classList.add('show');
+    $('modalPrintSize').value = els.printSize.value;
+}
 
-    const printWindow = window.open('', '_blank');
+function closePrintModal() {
+    $('printModal').classList.remove('show');
+}
+
+function executePrint() {
+    closePrintModal();
+
+    const paperSize = $('modalPrintSize').value;
+    const orientation = $('printOrientation').value;
+    const coverPage = $('coverPage');
+
+    // Paper size dimensions in mm
+    const sizes = {
+        'A3': { width: 297, height: 420 },
+        'A4': { width: 210, height: 297 },
+        'A5': { width: 148, height: 210 },
+        'Letter': { width: 215.9, height: 279.4 },
+        'Legal': { width: 215.9, height: 355.6 },
+        'Tabloid': { width: 279.4, height: 431.8 },
+        'Executive': { width: 184.15, height: 266.7 },
+    };
+
+    const size = sizes[paperSize] || sizes['A4'];
+    const w = orientation === 'landscape' ? size.height : size.width;
+    const h = orientation === 'landscape' ? size.width : size.height;
+
+    // Create print window
+    const printWindow = window.open('', '_blank', 'width=800,height=600');
+
+    // Clone styles
+    const styles = document.querySelectorAll('link[rel="stylesheet"], style');
+    let styleHTML = '';
+    styles.forEach(s => {
+        styleHTML += s.outerHTML;
+    });
+
+    // Get the cover page HTML
+    const coverClone = coverPage.cloneNode(true);
+    coverClone.style.transform = 'none';
+    coverClone.style.boxShadow = 'none';
+    coverClone.style.width = w + 'mm';
+    coverClone.style.minHeight = h + 'mm';
+    coverClone.style.margin = '0 auto';
+
+    // Fix inner containers
+    const borderEl = coverClone.querySelector('.page-border');
+    if (borderEl) {
+        borderEl.style.minHeight = h + 'mm';
+    }
+    const contentEl = coverClone.querySelector('.page-content');
+    if (contentEl) {
+        contentEl.style.minHeight = (h - 16) + 'mm';
+    }
+
     printWindow.document.write(`
+        <!DOCTYPE html>
         <html>
         <head>
-            <title>DCC Cover Page</title>
+            <title>Print Cover Page</title>
+            ${styleHTML}
             <style>
-                * { margin: 0; padding: 0; box-sizing: border-box; }
-                body { display: flex; justify-content: center; }
-                @page { size: A4; margin: 0; }
-
-                .cover-page {
-                    width: 210mm;
-                    min-height: 297mm;
-                    background: #fff;
+                @page {
+                    size: ${w}mm ${h}mm;
+                    margin: 0;
                 }
-
-                .cover-border {
-                    margin: 20px;
-                    padding: 30px 40px;
-                    min-height: calc(297mm - 40px);
-                    border: 3px double #1a1a2e;
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
+                body {
+                    margin: 0;
+                    padding: 0;
+                    background: white;
                 }
-
-                .cover-border.single-border { border: 2px solid #1a1a2e; }
-                .cover-border.no-border { border: none; }
-
-                .college-name {
-                    font-family: 'Times New Roman', serif;
-                    font-size: 28px;
-                    font-weight: 700;
-                    color: #1a1a2e;
-                    letter-spacing: 4px;
-                    text-align: center;
-                    margin-bottom: 15px;
-                    text-transform: uppercase;
+                .a4-page {
+                    transform: none !important;
+                    box-shadow: none !important;
+                    width: ${w}mm !important;
+                    min-height: ${h}mm !important;
+                    margin: 0 !important;
                 }
-
-                .logo-container { margin-bottom: 20px; }
-                .college-logo { width: 100px; height: 100px; object-fit: contain; }
-
-                .cover-section {
-                    text-align: center;
-                    margin-bottom: 20px;
-                    width: 100%;
+                .page-border {
+                    min-height: ${h}mm !important;
                 }
-
-                .cover-label-blue {
-                    color: #1565c0;
-                    font-size: 14px;
-                    font-weight: 700;
-                    margin-bottom: 4px;
+                .page-content {
+                    min-height: ${h - 16}mm !important;
                 }
-
-                .cover-label-blue.underline { text-decoration: underline; }
-
-                .cover-value {
-                    font-size: 13px;
-                    color: #333;
-                    line-height: 1.8;
-                }
-
-                .date-section {
-                    margin-top: auto;
-                    padding-top: 20px;
+                .header, .form-panel, .preview-header, .action-bar,
+                .advanced-card, .modal-overlay, .toast {
+                    display: none !important;
                 }
             </style>
         </head>
         <body>
-            ${coverPage.outerHTML}
+            ${coverClone.outerHTML}
         </body>
         </html>
     `);
+
     printWindow.document.close();
+
+    // Wait for images to load then print
     printWindow.onload = function() {
-        printWindow.print();
-        printWindow.close();
+        setTimeout(() => {
+            printWindow.print();
+            printWindow.close();
+        }, 500);
     };
 
-    coverPage.style.transform = originalTransform;
+    showToast(`Printing in ${paperSize} ${orientation}...`);
 }
 
-// ============ ZOOM / RESPONSIVE PREVIEW ============
-function adjustZoom() {
-    const wrapper = document.getElementById("previewWrapper");
-    const coverPage = document.getElementById("coverPage");
-    const zoomLabel = document.getElementById("zoomLabel");
+// Close modal on overlay click
+$('printModal').addEventListener('click', function(e) {
+    if (e.target === this) closePrintModal();
+});
 
-    if (!wrapper || !coverPage) return;
-
-    const wrapperWidth = wrapper.clientWidth;
-    const pageWidth = 595;
-    
-    // Calculate scale factor (leaving some padding)
-    let scale = Math.min((wrapperWidth - 30) / pageWidth, 1);
-    scale = Math.max(scale, 0.40); // minimum scale limit
-
-    coverPage.style.transform = `scale(${scale})`;
-    coverPage.style.transformOrigin = "top center";
-
-    if (zoomLabel) {
-        zoomLabel.textContent = Math.round(scale * 100) + "% zoom";
+// Close modal on Escape
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closePrintModal();
+        document.querySelectorAll('.autocomplete-list').forEach(l => l.classList.remove('show'));
     }
+});
+
+// ============ INITIAL PREVIEW ============
+updatePreview();
+
+// ============ SAVE/RESTORE FORM DATA ============
+function saveFormData() {
+    const data = {};
+    allInputs.forEach(input => {
+        if (input.id) data[input.id] = input.value;
+    });
+    try {
+        localStorage.setItem('dccCoverData', JSON.stringify(data));
+    } catch(e) {}
 }
 
-// ============ INITIALIZATION ============
-window.addEventListener("load", function() {
-    upd();
-    adjustZoom();
+function restoreFormData() {
+    try {
+        const data = JSON.parse(localStorage.getItem('dccCoverData'));
+        if (!data) return;
+        allInputs.forEach(input => {
+            if (input.id && data[input.id] !== undefined && data[input.id] !== '') {
+                // Don't restore defaults that might be stale
+                if (input.id === 'borderStyle' || input.id === 'printSize' || input.id === 'borderColor') return;
+                input.value = data[input.id];
+            }
+        });
+        updatePreview();
+    } catch(e) {}
+}
+
+// Save on input changes
+allInputs.forEach(input => {
+    input.addEventListener('input', saveFormData);
+    input.addEventListener('change', saveFormData);
 });
 
-// Debounce resize
-let resizeTimeout;
-window.addEventListener("resize", function() {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(adjustZoom, 100);
-});
+// Restore on load
+restoreFormData();
