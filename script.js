@@ -518,8 +518,14 @@ async function downloadPDF() {
     btn.classList.add('loading');
     btn.textContent = 'Generating...';
 
-    const original = document.getElementById('coverPage');
-    let clone = null;
+    const element = document.getElementById('coverPage');
+    const scrollContainer = document.getElementById('previewScroll');
+
+    // Remember everything we're about to temporarily change so we can restore it
+    const prevTransform = element.style.transform;
+    const prevTransformOrigin = element.style.transformOrigin;
+    const prevMarginBottom = element.style.marginBottom;
+    const prevScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
 
     try {
         // Make sure web fonts have finished loading before we snapshot the page
@@ -527,63 +533,72 @@ async function downloadPDF() {
             await document.fonts.ready;
         }
 
-        // IMPORTANT: don't capture the live element directly. It lives inside
-        // .preview-scroll, which is a scrolled AND zoomed (transform: scale)
-        // container. html2canvas frequently produces a blank/garbled capture
-        // when the target is nested inside a scrolled or scaled ancestor.
-        // Instead, clone it, strip the scaling/scroll context, and render the
-        // clone off-screen at full size so what gets captured is always clean.
-        clone = original.cloneNode(true);
-        clone.id = 'coverPage-pdf-clone';
-        clone.style.transform = 'none';
-        clone.style.transformOrigin = 'top left';
-        clone.style.margin = '0';
-        clone.style.boxShadow = 'none';
-        clone.style.position = 'fixed';
-        clone.style.top = '0';
-        clone.style.left = '-10000px'; // keep off-screen but still rendered/visible
-        clone.style.zIndex = '-1';
-        document.body.appendChild(clone);
+        // .a4-page normally lives inside a scrolled + zoomed preview
+        // (transform: scale + a negative margin-bottom to compensate for the
+        // zoom, plus overflow-y: auto on its parent). Capturing it as-is can
+        // produce a blank or mis-cropped render, so reset the zoom/scroll to
+        // show the page at true, full size before capturing.
+        element.style.transform = 'none';
+        element.style.transformOrigin = 'top left';
+        element.style.marginBottom = '0';
+        if (scrollContainer) scrollContainer.scrollTop = 0;
 
-        // Wait for every image inside the clone (e.g. the logo) to actually finish
-        // loading — capturing before images are ready is another common cause
-        // of a blank/incomplete PDF.
-        const images = Array.from(clone.querySelectorAll('img'));
+        // Force the browser to apply the style changes above before we measure
+        // or capture anything.
+        void element.offsetHeight;
+
+        // Wait for every image inside the page (e.g. the logo) to actually
+        // finish loading — capturing before images are ready is another
+        // common cause of a blank/incomplete PDF.
+        const images = Array.from(element.querySelectorAll('img'));
         await Promise.all(images.map(img => {
-            if (img.complete) return Promise.resolve();
+            if (img.complete && img.naturalWidth > 0) return Promise.resolve();
             return new Promise(resolve => {
                 img.onload = resolve;
                 img.onerror = resolve; // don't block forever on a broken image
             });
         }));
 
+        // Make the PDF page exactly the size of what we're about to capture
+        // (in pixels, matching the html2canvas scale below) instead of
+        // relying on the 'a4' mm preset. Mixing a fixed mm page size with a
+        // px-rendered canvas is what caused the mm/px rounding to spill a
+        // near-empty extra page onto the PDF. With page size == content
+        // size, there's nothing left over to overflow onto a second page.
+        const scale = 2;
+        const pxWidth = element.offsetWidth * scale;
+        const pxHeight = element.offsetHeight * scale;
+
         const opt = {
             margin: 0,
             filename: generateFilename(),
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
-                scale: 2,
+                scale,
                 useCORS: true,
                 logging: false,
                 letterRendering: true,
-                width: clone.offsetWidth,
-                height: clone.offsetHeight,
-                windowWidth: clone.offsetWidth,
-                windowHeight: clone.offsetHeight,
+                backgroundColor: '#ffffff',
             },
             jsPDF: {
-                unit: 'mm',
-                format: 'a4',
-                orientation: 'portrait'
-            }
+                unit: 'px',
+                format: [pxWidth, pxHeight],
+                orientation: 'portrait',
+            },
+            pagebreak: { mode: ['avoid-all'] },
         };
 
-        await html2pdf().set(opt).from(clone).save();
+        await html2pdf().set(opt).from(element).save();
     } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF generation failed. Please try again.');
     } finally {
-        if (clone) clone.remove();
+        // Restore the preview to exactly how it was before we touched it
+        element.style.transform = prevTransform;
+        element.style.transformOrigin = prevTransformOrigin;
+        element.style.marginBottom = prevMarginBottom;
+        if (scrollContainer) scrollContainer.scrollTop = prevScrollTop;
+
         btn.classList.remove('loading');
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
     }
