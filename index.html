@@ -475,21 +475,23 @@
     </div>
 
     <!-- PDF Preview Modal -->
-    <div class="modal-overlay" id="pdfPreviewModal">
-        <div class="modal-card modal-card-pdf">
-            <h3>Your Cover Page is Ready</h3>
-            <div class="pdf-preview-frame-wrap">
-                <img id="pdfPreviewImage" alt="PDF preview" style="width: 100%; height: auto; border-radius: 6px;">
-            </div>
-            <div class="modal-actions">
-                <button class="btn btn-clear" onclick="closePdfPreview()">Close</button>
-                <a class="btn btn-download" id="pdfPreviewDownloadLink" download>
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                    Download
-                </a>
-            </div>
-        </div>
+   <div id="pdfPreviewModal" class="modal-overlay">
+  <div class="modal-card">
+    <h2>Your Cover Page is Ready</h2>
+
+    <!-- IMAGE preview only — never put blob: PDF URLs in iframe on mobile -->
+    <div class="pdf-preview-wrap">
+      <img id="pdfPreviewImage" alt="Cover preview" />
     </div>
+
+    <div class="modal-actions">
+      <button type="button" id="pdfPreviewDownloadBtn" onclick="downloadGeneratedPdf()">
+        Download
+      </button>
+      <button type="button" onclick="closePdfPreview()">Close</button>
+    </div>
+  </div>
+</div>
 
     <script src="script.js"></script>
 </body>
