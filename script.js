@@ -513,15 +513,10 @@ document.getElementById('toggleBatchRow').addEventListener('change', function ()
 });
 
 // ============ PDF DOWNLOAD ============
-let pdfObjectUrl = null; // tracks the previous blob URL so we can release it
+let pdfObjectUrl = null; // tracks the current blob URL so we can release it
 
 async function downloadPDF() {
     const btn = document.getElementById('downloadBtn');
-    const readyLink = document.getElementById('downloadReadyLink');
-
-    // Hide any previous "ready" link and go back to the generating state
-    readyLink.classList.remove('visible');
-    btn.classList.remove('hidden');
     btn.classList.add('loading');
     btn.disabled = true;
     btn.textContent = 'Generating...';
@@ -600,13 +595,14 @@ async function downloadPDF() {
             pagebreak: { mode: ['avoid-all'] },
         };
 
-        // Build the PDF but DON'T call .save() here. Because generation is
-        // async (all the awaits above), by the time it finishes some
+        // Build the PDF as a Blob (not calling .save() directly) and show it
+        // in a preview modal with its own Download link. Because generation
+        // is async (all the awaits above), by the time it finishes some
         // browsers (notably Safari/iOS and in-app webviews) no longer treat
-        // this as a direct result of the user's click, and a programmatic
-        // save() can silently do nothing. Producing a Blob and handing it to
-        // a real, visible link that the user clicks themselves is reliable
-        // everywhere, because that click is a fresh, genuine user gesture.
+        // a save() call as a direct result of the user's original click.
+        // Handing the blob to a real, visible link that the user clicks
+        // themselves is reliable everywhere, since that click is a fresh,
+        // genuine user gesture — and it doubles as the requested preview step.
         const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
 
         if (pdfObjectUrl) {
@@ -614,16 +610,13 @@ async function downloadPDF() {
         }
         pdfObjectUrl = URL.createObjectURL(pdfBlob);
 
-        readyLink.href = pdfObjectUrl;
-        readyLink.download = generateFilename();
-        readyLink.classList.add('visible');
-        btn.classList.add('hidden');
+        const filename = generateFilename();
+        document.getElementById('pdfPreviewFrame').src = pdfObjectUrl;
+        const previewDownloadLink = document.getElementById('pdfPreviewDownloadLink');
+        previewDownloadLink.href = pdfObjectUrl;
+        previewDownloadLink.download = filename;
 
-        // Also try an automatic download for browsers that still allow it at
-        // this point — the visible link above remains as the reliable
-        // fallback either way, and lets the user re-download without
-        // regenerating.
-        readyLink.click();
+        document.getElementById('pdfPreviewModal').classList.add('active');
     } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF generation failed. Please try again.');
@@ -638,6 +631,12 @@ async function downloadPDF() {
         btn.disabled = false;
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
     }
+}
+
+function closePdfPreview() {
+    document.getElementById('pdfPreviewModal').classList.remove('active');
+    // Stop the iframe from continuing to render the (now-hidden) PDF
+    document.getElementById('pdfPreviewFrame').src = 'about:blank';
 }
 
 function generateFilename() {
@@ -752,6 +751,12 @@ function executePrint() {
 document.getElementById('printModal').addEventListener('click', function (e) {
     if (e.target === this) {
         closePrintModal();
+    }
+});
+
+document.getElementById('pdfPreviewModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closePdfPreview();
     }
 });
 

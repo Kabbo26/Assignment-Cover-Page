@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -444,10 +444,6 @@
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
             Download PDF
         </button>
-        <a class="btn btn-download-ready" id="downloadReadyLink" download>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Click to Download
-        </a>
         <button class="btn btn-print" onclick="printCover()">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
             Print
@@ -473,6 +469,23 @@
             <div class="modal-actions">
                 <button class="btn btn-clear" onclick="closePrintModal()">Cancel</button>
                 <button class="btn btn-download" onclick="executePrint()">Print Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Preview Modal -->
+    <div class="modal-overlay" id="pdfPreviewModal">
+        <div class="modal-card modal-card-pdf">
+            <h3>Your Cover Page is Ready</h3>
+            <div class="pdf-preview-frame-wrap">
+                <iframe id="pdfPreviewFrame" title="PDF preview"></iframe>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-clear" onclick="closePdfPreview()">Close</button>
+                <a class="btn btn-download" id="pdfPreviewDownloadLink" download>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download
+                </a>
             </div>
         </div>
     </div>
