@@ -1,5 +1,3 @@
-
-
 // ============ DATA ============
 const subjects = [
     // ============ 1st semester ============
@@ -520,14 +518,44 @@ async function downloadPDF() {
     btn.classList.add('loading');
     btn.textContent = 'Generating...';
 
-    try {
-        const element = document.getElementById('coverPage');
+    const original = document.getElementById('coverPage');
+    let clone = null;
 
-        // Store original transform
-        const originalTransform = element.style.transform;
-        const originalTransformOrigin = element.style.transformOrigin;
-        element.style.transform = 'none';
-        element.style.transformOrigin = 'top left';
+    try {
+        // Make sure web fonts have finished loading before we snapshot the page
+        if (document.fonts && document.fonts.ready) {
+            await document.fonts.ready;
+        }
+
+        // IMPORTANT: don't capture the live element directly. It lives inside
+        // .preview-scroll, which is a scrolled AND zoomed (transform: scale)
+        // container. html2canvas frequently produces a blank/garbled capture
+        // when the target is nested inside a scrolled or scaled ancestor.
+        // Instead, clone it, strip the scaling/scroll context, and render the
+        // clone off-screen at full size so what gets captured is always clean.
+        clone = original.cloneNode(true);
+        clone.id = 'coverPage-pdf-clone';
+        clone.style.transform = 'none';
+        clone.style.transformOrigin = 'top left';
+        clone.style.margin = '0';
+        clone.style.boxShadow = 'none';
+        clone.style.position = 'fixed';
+        clone.style.top = '0';
+        clone.style.left = '-10000px'; // keep off-screen but still rendered/visible
+        clone.style.zIndex = '-1';
+        document.body.appendChild(clone);
+
+        // Wait for every image inside the clone (e.g. the logo) to actually finish
+        // loading — capturing before images are ready is another common cause
+        // of a blank/incomplete PDF.
+        const images = Array.from(clone.querySelectorAll('img'));
+        await Promise.all(images.map(img => {
+            if (img.complete) return Promise.resolve();
+            return new Promise(resolve => {
+                img.onload = resolve;
+                img.onerror = resolve; // don't block forever on a broken image
+            });
+        }));
 
         const opt = {
             margin: 0,
@@ -536,11 +564,12 @@ async function downloadPDF() {
             html2canvas: {
                 scale: 2,
                 useCORS: true,
-                allowTaint: true,
                 logging: false,
                 letterRendering: true,
-                width: element.offsetWidth,
-                height: element.offsetHeight,
+                width: clone.offsetWidth,
+                height: clone.offsetHeight,
+                windowWidth: clone.offsetWidth,
+                windowHeight: clone.offsetHeight,
             },
             jsPDF: {
                 unit: 'mm',
@@ -549,15 +578,12 @@ async function downloadPDF() {
             }
         };
 
-        await html2pdf().set(opt).from(element).save();
-
-        // Restore transform
-        element.style.transform = originalTransform;
-        element.style.transformOrigin = originalTransformOrigin;
+        await html2pdf().set(opt).from(clone).save();
     } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF generation failed. Please try again.');
     } finally {
+        if (clone) clone.remove();
         btn.classList.remove('loading');
         btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF`;
     }
