@@ -562,56 +562,49 @@ async function downloadPDF() {
             });
         }));
 
-        // Make the PDF page exactly the element's real (CSS-pixel) size
-        // instead of relying on the 'a4' mm preset. Mixing a fixed mm page
-        // size with a px-rendered canvas is what caused the mm/px rounding
-        // to spill a near-empty extra page onto the PDF. With page size ==
-        // content size, there's nothing left over to overflow onto a
-        // second page.
-        //
-        // NOTE: the html2canvas 'scale' below only supersamples for a
-        // sharper image — it must NOT be multiplied into the page size, or
-        // the page ends up physically larger than the content and the
-        // content only fills a corner of it.
-        const pxWidth = element.offsetWidth;
-        const pxHeight = element.offsetHeight;
+        // Rasterize the page ourselves with html2canvas (bundled and exposed
+        // globally by html2pdf.bundle.min.js), instead of going through
+        // html2pdf's own from()/toPdf() wrapper. This gives us the exact
+        // same image both for the on-screen preview AND the PDF, and lets us
+        // size the PDF page to match the image pixel-for-pixel, so there's
+        // never a mismatch or a stray extra page.
+        const canvas = await html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            logging: false,
+            letterRendering: true,
+            backgroundColor: '#ffffff',
+        });
 
-        const opt = {
-            margin: 0,
-            filename: generateFilename(),
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: {
-                scale: 2,
-                useCORS: true,
-                logging: false,
-                letterRendering: true,
-                backgroundColor: '#ffffff',
-            },
-            jsPDF: {
-                unit: 'px',
-                format: [pxWidth, pxHeight],
-                orientation: 'portrait',
-            },
-            pagebreak: { mode: ['avoid-all'] },
-        };
+        const imgData = canvas.toDataURL('image/jpeg', 0.95);
 
-        // Build the PDF as a Blob (not calling .save() directly) and show it
-        // in a preview modal with its own Download link. Because generation
-        // is async (all the awaits above), by the time it finishes some
-        // browsers (notably Safari/iOS and in-app webviews) no longer treat
-        // a save() call as a direct result of the user's original click.
-        // Handing the blob to a real, visible link that the user clicks
-        // themselves is reliable everywhere, since that click is a fresh,
-        // genuine user gesture — and it doubles as the requested preview step.
-        const pdfBlob = await html2pdf().set(opt).from(element).outputPdf('blob');
+        // Build a single-page PDF whose page size is exactly the canvas's
+        // own pixel dimensions, and draw the image to fill that same size.
+        // Because both numbers come from the same canvas, there is no
+        // unit-conversion mismatch — the previous version's blank-corner and
+        // stray-second-page bugs both came from the page size and the image
+        // size being computed differently.
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF({
+            unit: 'px',
+            format: [canvas.width, canvas.height],
+            orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
+        });
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
+        const pdfBlob = pdf.output('blob');
 
         if (pdfObjectUrl) {
             URL.revokeObjectURL(pdfObjectUrl); // release the previous PDF, if any
         }
         pdfObjectUrl = URL.createObjectURL(pdfBlob);
 
+        // PDFs generally don't render inside an <iframe> on mobile browsers
+        // (and unreliably even on desktop), so preview the same image we
+        // just used to build the PDF instead — it's visually identical to
+        // the PDF page and works everywhere with no plugin required.
+        document.getElementById('pdfPreviewImage').src = imgData;
+
         const filename = generateFilename();
-        document.getElementById('pdfPreviewFrame').src = pdfObjectUrl;
         const previewDownloadLink = document.getElementById('pdfPreviewDownloadLink');
         previewDownloadLink.href = pdfObjectUrl;
         previewDownloadLink.download = filename;
@@ -635,8 +628,6 @@ async function downloadPDF() {
 
 function closePdfPreview() {
     document.getElementById('pdfPreviewModal').classList.remove('active');
-    // Stop the iframe from continuing to render the (now-hidden) PDF
-    document.getElementById('pdfPreviewFrame').src = 'about:blank';
 }
 
 function generateFilename() {
