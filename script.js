@@ -559,22 +559,26 @@ async function downloadPDF() {
             });
         }));
 
-        // Make the PDF page exactly the size of what we're about to capture
-        // (in pixels, matching the html2canvas scale below) instead of
-        // relying on the 'a4' mm preset. Mixing a fixed mm page size with a
-        // px-rendered canvas is what caused the mm/px rounding to spill a
-        // near-empty extra page onto the PDF. With page size == content
-        // size, there's nothing left over to overflow onto a second page.
-        const scale = 2;
-        const pxWidth = element.offsetWidth * scale;
-        const pxHeight = element.offsetHeight * scale;
+        // Make the PDF page exactly the element's real (CSS-pixel) size
+        // instead of relying on the 'a4' mm preset. Mixing a fixed mm page
+        // size with a px-rendered canvas is what caused the mm/px rounding
+        // to spill a near-empty extra page onto the PDF. With page size ==
+        // content size, there's nothing left over to overflow onto a
+        // second page.
+        //
+        // NOTE: the html2canvas 'scale' below only supersamples for a
+        // sharper image — it must NOT be multiplied into the page size, or
+        // the page ends up physically larger than the content and the
+        // content only fills a corner of it.
+        const pxWidth = element.offsetWidth;
+        const pxHeight = element.offsetHeight;
 
         const opt = {
             margin: 0,
             filename: generateFilename(),
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: {
-                scale,
+                scale: 2,
                 useCORS: true,
                 logging: false,
                 letterRendering: true,
