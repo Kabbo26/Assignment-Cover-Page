@@ -492,6 +492,89 @@ function downloadPDF() {
     });
 }
 
+// ============ DOWNLOAD PDF (MOBILE FIXED) ============
+async function downloadPDF() {
+    // Validate required fields
+    const sname = document.getElementById("f_sname").value.trim();
+    const roll = document.getElementById("f_roll").value.trim();
+    const sec = document.getElementById("f_sec").value.trim();
+    const batch = document.getElementById("f_batch").value.trim();
+    const date = document.getElementById("f_date").value;
+
+    let valid = true;
+
+    if (!sname) { markError("f_sname"); valid = false; }
+    if (!roll) { markError("f_roll"); valid = false; }
+    if (!sec) { markError("f_sec"); valid = false; }
+    if (!batch) { markError("f_batch"); valid = false; }
+    if (!date) { markError("f_date"); valid = false; }
+
+    if (!valid) {
+        alert("Please fill in all required fields marked with *");
+        return;
+    }
+
+    // Button loading state
+    const btn = document.getElementById("downloadBtn");
+    const origText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+    btn.disabled = true;
+
+    const originalElement = document.getElementById("coverPage");
+
+    // FIX 1: Create an off-screen container at exactly top:0, left:0
+    // This stops mobile scroll positions from generating blank pages
+    const cloneContainer = document.createElement("div");
+    cloneContainer.style.position = "absolute";
+    cloneContainer.style.top = "0";
+    cloneContainer.style.left = "0";
+    cloneContainer.style.width = "595px";
+    cloneContainer.style.height = "842px";
+    cloneContainer.style.zIndex = "-9999"; 
+    cloneContainer.style.background = "#fff";
+
+    // FIX 2: Clone the cover page to strip away the mobile live-preview "scale()" transforms
+    const clone = originalElement.cloneNode(true);
+    clone.style.transform = "none";
+    clone.style.margin = "0";
+    
+    cloneContainer.appendChild(clone);
+    document.body.appendChild(cloneContainer);
+
+    const opt = {
+        margin: 0,
+        filename: 'DCC_Cover_Page.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true,
+            scrollY: 0, // CRITICAL FIX: Ignores mobile scrolling
+            scrollX: 0,
+            windowWidth: 595,
+            windowHeight: 842
+        },
+        jsPDF: {
+            unit: 'mm',
+            format: 'a4',
+            orientation: 'portrait'
+        }
+    };
+
+    // Generate PDF from the pristine clone
+    try {
+        await html2pdf().set(opt).from(clone).save();
+    } catch (error) {
+        console.error("PDF generation failed:", error);
+        alert("An error occurred during download.");
+    } finally {
+        // Clean up the clone and reset button
+        document.body.removeChild(cloneContainer);
+        btn.innerHTML = origText;
+        btn.disabled = false;
+    }
+}
+
 // ============ PRINT ============
 function printCover() {
     const coverPage = document.getElementById("coverPage");

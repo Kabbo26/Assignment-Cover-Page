@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DCC Cover Generator - Assignment Cover Page Maker</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&family=Times+New+Roman&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -47,17 +47,9 @@
                     <legend>ASSIGNMENT</legend>
 
                     <div class="field-group">
-                        <label>Assignment Topic <span class="required">*</span></label>
+                        <label>Subject Name <span class="tag">type or search</span></label>
                         <div class="input-with-clear">
-                            <input type="text" id="f_topic" placeholder="e.g. Insurance Math" oninput="upd()">
-                            <button class="clear-btn" onclick="clearField('f_topic')"><i class="fas fa-times"></i></button>
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <label>Course Name <span class="tag">type or search</span></label>
-                        <div class="input-with-clear">
-                            <input type="text" id="f_subject" placeholder="e.g. Risk Management & Insurance" oninput="upd()">
+                            <input type="text" id="f_subject" placeholder="e.g. Supply Chain Management" oninput="upd()">
                             <button class="clear-btn" onclick="clearField('f_subject')"><i class="fas fa-times"></i></button>
                         </div>
                         <div class="suggestions" id="subject_suggestions"></div>
@@ -66,41 +58,20 @@
                     <div class="field-group">
                         <label>Course Code <span class="tag">type or search</span></label>
                         <div class="input-with-clear">
-                            <input type="text" id="f_course" placeholder="e.g. 520129" oninput="upd()">
+                            <input type="text" id="f_course" placeholder="e.g. 520137" oninput="upd()">
                             <button class="clear-btn" onclick="clearField('f_course')"><i class="fas fa-times"></i></button>
                         </div>
                     </div>
                 </fieldset>
 
-                <!-- BATCH INFO SECTION -->
+                <!-- PREPARED FOR SECTION -->
                 <fieldset class="form-section">
-                    <legend>BATCH INFORMATION</legend>
-
-                    <div class="field-row">
-                        <div class="field-group half">
-                            <label>Batch <span class="required">*</span></label>
-                            <input type="text" id="f_batch" placeholder="e.g. 25" oninput="upd()">
-                        </div>
-                        <div class="field-group half">
-                            <label>Semester <span class="required">*</span></label>
-                            <input type="text" id="f_sem" placeholder="e.g. 04" oninput="upd()">
-                        </div>
-                    </div>
-
-                    <div class="field-group">
-                        <label>Session <span class="required">*</span></label>
-                        <input type="text" id="f_session" placeholder="e.g. 22-23" oninput="upd()">
-                    </div>
-                </fieldset>
-
-                <!-- SUBMITTED TO SECTION -->
-                <fieldset class="form-section">
-                    <legend>SUBMITTED TO</legend>
+                    <legend>PREPARED FOR</legend>
 
                     <div class="field-group">
                         <label>Teacher Name <span class="tag">type or search</span></label>
                         <div class="input-with-clear">
-                            <input type="text" id="f_teacher" placeholder="e.g. Ms. Refatun Nahar" oninput="upd()">
+                            <input type="text" id="f_teacher" placeholder="e.g. Ms. Sania Magfur" oninput="upd()">
                             <button class="clear-btn" onclick="clearField('f_teacher')"><i class="fas fa-times"></i></button>
                         </div>
                         <div class="suggestions" id="teacher_suggestions"></div>
@@ -124,33 +95,44 @@
 
                     <div class="field-group">
                         <label>Department <span class="tag editable">editable</span></label>
-                        <input type="text" id="f_tdept" value="Department of Business Administration" oninput="upd()">
+                        <input type="text" id="f_tdept" value="Department Of Business Administration" oninput="upd()">
                     </div>
                 </fieldset>
 
-                <!-- SUBMITTED BY SECTION -->
+                <!-- PREPARED BY SECTION -->
                 <fieldset class="form-section">
-                    <legend>SUBMITTED BY</legend>
+                    <legend>PREPARED BY</legend>
 
                     <div class="field-group">
                         <label>Student Name <span class="required">*</span></label>
-                        <input type="text" id="f_sname" placeholder="e.g. Kabbya Banik" oninput="upd()">
+                        <input type="text" id="f_sname" placeholder="e.g. Abdullah-Al-Saymon" oninput="upd()">
                     </div>
 
                     <div class="field-row">
                         <div class="field-group half">
-                            <label>Roll No <span class="required">*</span></label>
-                            <input type="text" id="f_roll" placeholder="e.g. 61" oninput="upd()">
+                            <label>Roll <span class="required">*</span></label>
+                            <input type="text" id="f_roll" placeholder="e.g. 114" oninput="upd()">
                         </div>
                         <div class="field-group half">
                             <label>Section <span class="required">*</span></label>
-                            <input type="text" id="f_sec" placeholder="e.g. A" oninput="upd()">
+                            <input type="text" id="f_sec" placeholder="e.g. B" oninput="upd()">
+                        </div>
+                    </div>
+
+                    <div class="field-row">
+                        <div class="field-group half">
+                            <label>Batch <span class="required">*</span></label>
+                            <input type="text" id="f_batch" placeholder="e.g. 25" oninput="upd()">
+                        </div>
+                        <div class="field-group half">
+                            <label>Semester <span class="tag">auto-fill</span></label>
+                            <input type="text" id="f_sem" placeholder="e.g. 04" oninput="upd()">
                         </div>
                     </div>
 
                     <div class="field-group">
-                        <label>Session (Student)</label>
-                        <input type="text" id="f_ssession" placeholder="e.g. 22-23 (auto-fills from above)" oninput="upd()">
+                        <label>Department <span class="tag editable">editable</span></label>
+                        <input type="text" id="f_sdept" value="Department Of Business Administration" oninput="upd()">
                     </div>
                 </fieldset>
 
@@ -161,6 +143,11 @@
                     <div class="field-group">
                         <label>Date of Submission <span class="required">*</span></label>
                         <input type="date" id="f_date" oninput="upd()">
+                    </div>
+
+                    <div class="field-group">
+                        <label>Assignment Topic</label>
+                        <input type="text" id="f_topic" placeholder="e.g. Impact of Digital Marketing" oninput="upd()">
                     </div>
                 </fieldset>
             </div>
@@ -188,12 +175,20 @@
                         <input type="text" id="f_college" value="Dhaka City College" oninput="upd()">
                     </div>
                     <div class="field-group">
-                        <label>Department Name</label>
-                        <input type="text" id="f_dept_header" value="Department of Business Administration" oninput="upd()">
+                        <label>Font Size</label>
+                        <select id="f_fontsize" onchange="upd()">
+                            <option value="small">Small</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="large">Large</option>
+                        </select>
                     </div>
                     <div class="field-group">
-                        <label>Program</label>
-                        <input type="text" id="f_program" value="BBA" oninput="upd()">
+                        <label>Border Style</label>
+                        <select id="f_border" onchange="upd()">
+                            <option value="double" selected>Double Border</option>
+                            <option value="single">Single Border</option>
+                            <option value="none">No Border</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -214,58 +209,48 @@
 
             <div class="preview-wrapper" id="previewWrapper">
                 <div class="cover-page" id="coverPage">
+                    <div class="cover-border" id="coverBorder">
+                        <!-- College Name -->
+                        <h1 class="college-name" id="p_college">DHAKA CITY COLLEGE</h1>
 
-                    <!-- Logo at top -->
-                    <div class="cover-logo-top">
-                        <img src="image/logo.png" alt="DCC Logo" class="college-logo">
-                    </div>
+                        <!-- Logo (Crossorigin added to prevent mobile block) -->
+                        <div class="logo-container">
+                            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5e/Dhaka_City_College_logo.png/220px-Dhaka_City_College_logo.png" alt="DCC Logo" class="college-logo" id="collegeLogo" crossorigin="anonymous">
+                        </div>
 
-                    <!-- College Name -->
-                    <h1 class="college-name" id="p_college">DHAKA CITY COLLEGE</h1>
+                        <!-- Assignment Info -->
+                        <div class="cover-section assignment-info">
+                            <p class="cover-label-blue">Assignment On</p>
+                            <p class="cover-value italic" id="p_topic"><em>ASSIGNMENT TITLE</em></p>
+                            <br>
+                            <p class="cover-value" id="p_course"><em>Course Code : —</em></p>
+                        </div>
 
-                    <!-- Department -->
-                    <h2 class="dept-name" id="p_dept_header">DEPARTMENT OF BUSINESS ADMINISTRATION</h2>
+                        <!-- Prepared For -->
+                        <div class="cover-section prepared-for">
+                            <p class="cover-label-blue underline">Prepared For :</p>
+                            <p class="cover-value italic" id="p_teacher"><em>Teacher Name</em></p>
+                            <p class="cover-value italic" id="p_designation"><em>Designation</em></p>
+                            <p class="cover-value" id="p_tdept">Department Of Business Administration</p>
+                            <p class="cover-value" id="p_tcollege">Dhaka City College</p>
+                        </div>
 
-                    <!-- Assignment On -->
-                    <div class="cover-section assignment-section">
-                        <p class="assignment-on-label">Assignment on</p>
-                        <p class="assignment-topic" id="p_topic">Fire Insurance Math</p>
-                    </div>
+                        <!-- Prepared By -->
+                        <div class="cover-section prepared-by">
+                            <p class="cover-label-blue underline">Prepared By :</p>
+                            <p class="cover-value italic" id="p_sname"><em>Student Name</em></p>
+                            <p class="cover-value" id="p_roll">Roll : —</p>
+                            <p class="cover-value" id="p_sec">Section : —</p>
+                            <p class="cover-value" id="p_batch">Batch : —</p>
+                            <p class="cover-value" id="p_sem">Semester : —</p>
+                            <p class="cover-value" id="p_sdept">Department Of Business Administration</p>
+                            <p class="cover-value" id="p_scollege">Dhaka City College</p>
+                        </div>
 
-                    <!-- Course Info -->
-                    <div class="cover-section course-section">
-                        <p class="course-line"><span class="bold-label">Course Name:</span> <span id="p_subject">Risk Management & Insurance</span></p>
-                        <p class="course-line"><span class="bold-label">Course Code:</span> <span id="p_course">520129</span></p>
-                    </div>
-
-                    <!-- Batch Info -->
-                    <div class="cover-section batch-section">
-                        <p class="batch-line" id="p_batch_line">
-                            <span class="bold-label" id="p_program">BBA</span> BATCH – <span class="underline-text" id="p_batch">25</span> Semester – <span class="underline-text" id="p_sem">04</span> Session: <span id="p_session">22-23</span>
-                        </p>
-                    </div>
-
-                    <!-- Submitted To -->
-                    <div class="cover-section submitted-to-section">
-                        <h3 class="section-heading">Submitted to</h3>
-                        <p class="teacher-name" id="p_teacher">Ms. Refatun Nahar</p>
-                        <p class="teacher-info" id="p_designation">Assistant Professor</p>
-                        <p class="teacher-info" id="p_tdept">Department of Business Administration</p>
-                        <p class="teacher-info" id="p_tcollege">Dhaka City College</p>
-                    </div>
-
-                    <!-- Submitted By -->
-                    <div class="cover-section submitted-by-section">
-                        <h3 class="section-heading">Submitted by</h3>
-                        <p class="student-name" id="p_sname">Kabbya Banik</p>
-                        <p class="student-info"><span class="bold-label">Roll No:</span> <span id="p_roll">61</span></p>
-                        <p class="student-info"><span class="bold-label">Section:</span> <span id="p_sec">A</span></p>
-                        <p class="student-info"><span class="bold-label">Session:</span> <span id="p_ssession">22-23</span></p>
-                    </div>
-
-                    <!-- Date -->
-                    <div class="cover-section date-section">
-                        <p class="date-line" id="p_date">Date of Submission: 19 May 2026</p>
+                        <!-- Date -->
+                        <div class="cover-section date-section">
+                            <p class="cover-value italic" id="p_date"><em>Date Of Submission : —</em></p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -275,7 +260,7 @@
                 <button class="btn btn-clear" onclick="clrAll()">
                     <i class="fas fa-times"></i> Clear
                 </button>
-                <button class="btn btn-download" onclick="downloadPDF()">
+                <button class="btn btn-download" id="downloadBtn" onclick="downloadPDF()">
                     <i class="fas fa-download"></i> Download PDF
                 </button>
                 <button class="btn btn-print" onclick="printCover()">
@@ -285,7 +270,7 @@
         </div>
     </div>
 
-   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="function.js"></script>
 </body>
 </html>
