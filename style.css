@@ -480,186 +480,113 @@ input[type="text"].valid {
     justify-content: center;
     align-items: flex-start;
     padding: 10px;
+    overflow-x: auto;
 }
 
-/* ============================================
-   COVER PAGE - EXACT MATCH TO IMAGE
-   ============================================ */
+/* ============ COVER PAGE ============ */
 .cover-page {
     width: 595px;
+    min-width: 595px;
     min-height: 842px;
     background: #fff;
     box-shadow: 0 10px 60px rgba(0, 0, 0, 0.15);
     transform-origin: top center;
-    transition: transform 0.3s ease;
-    padding: 40px 60px;
+    transition: transform 0.2s ease;
+}
+
+.cover-border {
+    margin: 20px;
+    padding: 30px 40px;
+    min-height: 802px;
+    border: 3px double #1a1a2e;
     display: flex;
     flex-direction: column;
     align-items: center;
-    font-family: 'Times New Roman', Times, serif;
     position: relative;
+    background: #fff;
 }
 
-/* Logo */
-.cover-logo-top {
-    margin-bottom: 16px;
+.cover-border.single-border {
+    border: 2px solid #1a1a2e;
 }
 
-.college-logo {
-    width: 80px;
-    height: 80px;
-    object-fit: contain;
+.cover-border.no-border {
+    border: none;
 }
 
-/* College Name */
+/* ============ COVER CONTENT ============ */
 .college-name {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 22px;
+    font-family: 'Times New Roman', 'Playfair Display', serif;
+    font-size: 28px;
     font-weight: 700;
-    color: #000;
-    letter-spacing: 2px;
+    color: #1a1a2e;
+    letter-spacing: 4px;
     text-align: center;
-    margin-bottom: 8px;
+    margin-bottom: 15px;
     text-transform: uppercase;
 }
 
-/* Department Name */
-.dept-name {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 16px;
-    font-weight: 700;
-    color: #000;
-    text-align: center;
-    margin-bottom: 24px;
-    text-transform: uppercase;
-}
-
-/* Cover Sections */
-.cover-section {
-    text-align: center;
-    width: 100%;
-}
-
-/* Assignment Section */
-.assignment-section {
-    margin-bottom: 12px;
-}
-
-.assignment-on-label {
-    font-size: 15px;
-    font-weight: 700;
-    color: #000;
-    margin-bottom: 4px;
-    font-style: italic;
-}
-
-.assignment-topic {
-    font-size: 14px;
-    color: #000;
-    font-style: italic;
-}
-
-.assignment-topic.placeholder {
-    color: #aaa;
-}
-
-/* Course Section */
-.course-section {
-    margin-bottom: 8px;
-}
-
-.course-line {
-    font-size: 14px;
-    color: #000;
-    line-height: 1.9;
-}
-
-.bold-label {
-    font-weight: 700;
-}
-
-/* Batch Section */
-.batch-section {
-    margin-bottom: 30px;
-}
-
-.batch-line {
-    font-size: 14px;
-    color: #000;
-    font-weight: 700;
-}
-
-.underline-text {
-    text-decoration: underline;
-}
-
-/* Submitted To Section */
-.submitted-to-section {
-    margin-bottom: 28px;
-    margin-top: 10px;
-}
-
-.section-heading {
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 20px;
-    font-weight: 700;
-    font-style: italic;
-    color: #000;
-    margin-bottom: 8px;
-}
-
-.teacher-name {
-    font-size: 14px;
-    color: #000;
-    margin-bottom: 2px;
-}
-
-.teacher-info {
-    font-size: 13px;
-    color: #000;
-    line-height: 1.8;
-}
-
-/* Submitted By Section */
-.submitted-by-section {
+.logo-container {
     margin-bottom: 20px;
 }
 
-.student-name {
+.college-logo {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+
+.cover-section {
+    text-align: center;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.cover-label-blue {
+    color: #1565c0;
     font-size: 14px;
-    color: #000;
+    font-weight: 700;
     margin-bottom: 4px;
 }
 
-.student-info {
+.cover-label-blue.underline {
+    text-decoration: underline;
+}
+
+.cover-value {
     font-size: 13px;
-    color: #000;
+    color: #333;
     line-height: 1.8;
 }
 
-/* Date Section */
-.date-section {
-    margin-top: auto;
-    padding-top: 30px;
-    border-top: 1px solid #ccc;
-    width: 80%;
-}
-
-.date-line {
-    font-size: 13px;
-    color: #000;
+.cover-value.italic,
+.cover-value em {
+    color: #888;
     font-style: italic;
 }
 
-.date-line.placeholder {
-    color: #aaa;
+.cover-value.filled {
+    color: #333;
+    font-style: normal;
 }
 
-/* Placeholder styling for empty fields */
-.empty-field {
-    color: #bbb !important;
-    font-style: italic !important;
+.assignment-info {
+    margin-top: 10px;
 }
+
+.date-section {
+    margin-top: auto;
+    padding-top: 20px;
+}
+
+/* Font size variations */
+.cover-page.font-small .college-name { font-size: 24px; }
+.cover-page.font-small .cover-label-blue { font-size: 12px; }
+.cover-page.font-small .cover-value { font-size: 11px; }
+
+.cover-page.font-large .college-name { font-size: 32px; }
+.cover-page.font-large .cover-label-blue { font-size: 16px; }
+.cover-page.font-large .cover-value { font-size: 15px; }
 
 /* ============ ACTION BUTTONS ============ */
 .action-buttons {
@@ -685,13 +612,18 @@ input[type="text"].valid {
     transition: all 0.25s ease;
 }
 
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
 .btn-clear {
     background: #fff;
     color: #666;
     border: 2px solid #e0e0e0;
 }
 
-.btn-clear:hover {
+.btn-clear:hover:not(:disabled) {
     background: #fee;
     border-color: #e53935;
     color: #e53935;
@@ -704,7 +636,7 @@ input[type="text"].valid {
     box-shadow: 0 4px 15px rgba(229, 57, 53, 0.3);
 }
 
-.btn-download:hover {
+.btn-download:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 6px 25px rgba(229, 57, 53, 0.4);
 }
@@ -715,7 +647,7 @@ input[type="text"].valid {
     border: 2px solid #e0e0e0;
 }
 
-.btn-print:hover {
+.btn-print:hover:not(:disabled) {
     background: #e3f2fd;
     border-color: #1565c0;
     color: #1565c0;
@@ -761,11 +693,6 @@ input[type="text"].valid {
     .right-panel {
         max-height: none;
     }
-
-    .cover-page {
-        transform: scale(0.7) !important;
-        transform-origin: top center;
-    }
 }
 
 @media (max-width: 768px) {
@@ -783,10 +710,6 @@ input[type="text"].valid {
 
     .right-panel {
         padding: 16px;
-    }
-
-    .cover-page {
-        transform: scale(0.5) !important;
     }
 
     .action-buttons {

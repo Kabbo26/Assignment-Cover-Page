@@ -108,156 +108,123 @@ const teachers = [
 
 // ============ UPDATE PREVIEW ============
 function upd() {
-    // Get all form values
-    const topic = val("f_topic");
-    const subject = val("f_subject");
-    const course = val("f_course");
-    const batch = val("f_batch");
-    const sem = val("f_sem");
-    const session = val("f_session");
-    const teacher = val("f_teacher");
+    const subject = document.getElementById("f_subject").value.trim();
+    const course = document.getElementById("f_course").value.trim();
+    const teacher = document.getElementById("f_teacher").value.trim();
     const designation = document.getElementById("f_designation").value;
-    const tdept = val("f_tdept");
-    const sname = val("f_sname");
-    const roll = val("f_roll");
-    const sec = val("f_sec");
-    const ssession = val("f_ssession");
+    const tdept = document.getElementById("f_tdept").value.trim();
+    const sname = document.getElementById("f_sname").value.trim();
+    const roll = document.getElementById("f_roll").value.trim();
+    const sec = document.getElementById("f_sec").value.trim();
+    const batch = document.getElementById("f_batch").value.trim();
+    const sem = document.getElementById("f_sem").value.trim();
+    const sdept = document.getElementById("f_sdept").value.trim();
     const date = document.getElementById("f_date").value;
-    const college = val("f_college");
-    const deptHeader = val("f_dept_header");
-    const program = val("f_program");
-
-    // Auto-fill student session from batch session
-    if (session && !document.getElementById("f_ssession").value.trim()) {
-        document.getElementById("p_ssession").textContent = session;
-    }
+    const topic = document.getElementById("f_topic").value.trim();
+    const college = document.getElementById("f_college").value.trim();
+    const fontSize = document.getElementById("f_fontsize").value;
+    const borderStyle = document.getElementById("f_border").value;
 
     // Update college name
-    setText("p_college", college || "DHAKA CITY COLLEGE");
+    const pCollege = document.getElementById("p_college");
+    pCollege.textContent = college || "DHAKA CITY COLLEGE";
 
-    // Update department header
-    setText("p_dept_header", (deptHeader || "DEPARTMENT OF BUSINESS ADMINISTRATION").toUpperCase());
-
-    // Update assignment topic
+    // Update topic/subject
     const pTopic = document.getElementById("p_topic");
     if (topic) {
-        pTopic.textContent = topic;
-        pTopic.classList.remove("placeholder");
+        pTopic.innerHTML = topic;
+        pTopic.classList.add("filled");
+        pTopic.classList.remove("italic");
+    } else if (subject) {
+        pTopic.innerHTML = subject;
+        pTopic.classList.add("filled");
+        pTopic.classList.remove("italic");
     } else {
-        pTopic.textContent = "Assignment Title";
-        pTopic.classList.add("placeholder");
-    }
-
-    // Update course name
-    const pSubject = document.getElementById("p_subject");
-    if (subject) {
-        pSubject.textContent = subject;
-        pSubject.classList.remove("empty-field");
-    } else {
-        pSubject.textContent = "—";
-        pSubject.classList.add("empty-field");
+        pTopic.innerHTML = "<em>ASSIGNMENT TITLE</em>";
+        pTopic.classList.remove("filled");
+        pTopic.classList.add("italic");
     }
 
     // Update course code
     const pCourse = document.getElementById("p_course");
     if (course) {
-        pCourse.textContent = course;
-        pCourse.classList.remove("empty-field");
+        pCourse.innerHTML = "Course Code : " + course;
+        pCourse.classList.add("filled");
     } else {
-        pCourse.textContent = "—";
-        pCourse.classList.add("empty-field");
+        pCourse.innerHTML = "<em>Course Code : —</em>";
+        pCourse.classList.remove("filled");
     }
-
-    // Update batch line
-    updateBatchLine(program, batch, sem, session);
 
     // Update teacher
     const pTeacher = document.getElementById("p_teacher");
     if (teacher) {
-        pTeacher.textContent = teacher;
-        pTeacher.classList.remove("empty-field");
+        pTeacher.innerHTML = teacher;
+        pTeacher.classList.add("filled");
     } else {
-        pTeacher.textContent = "Teacher Name";
-        pTeacher.classList.add("empty-field");
+        pTeacher.innerHTML = "<em>Teacher Name</em>";
+        pTeacher.classList.remove("filled");
     }
 
     // Update designation
     const pDesignation = document.getElementById("p_designation");
     if (designation) {
-        pDesignation.textContent = designation;
-        pDesignation.classList.remove("empty-field");
+        pDesignation.innerHTML = designation;
+        pDesignation.classList.add("filled");
     } else {
-        pDesignation.textContent = "Designation";
-        pDesignation.classList.add("empty-field");
+        pDesignation.innerHTML = "<em>Designation</em>";
+        pDesignation.classList.remove("filled");
     }
 
     // Update teacher dept & college
-    setText("p_tdept", tdept || "Department of Business Administration");
-    setText("p_tcollege", college || "Dhaka City College");
+    document.getElementById("p_tdept").textContent = tdept || "Department Of Business Administration";
+    document.getElementById("p_tcollege").textContent = college || "Dhaka City College";
 
     // Update student name
     const pSname = document.getElementById("p_sname");
     if (sname) {
-        pSname.textContent = sname;
-        pSname.classList.remove("empty-field");
+        pSname.innerHTML = sname;
+        pSname.classList.add("filled");
     } else {
-        pSname.textContent = "Student Name";
-        pSname.classList.add("empty-field");
+        pSname.innerHTML = "<em>Student Name</em>";
+        pSname.classList.remove("filled");
     }
 
-    // Update roll
-    const pRoll = document.getElementById("p_roll");
-    pRoll.textContent = roll || "—";
+    // Update roll, section, batch, semester
+    document.getElementById("p_roll").textContent = "Roll : " + (roll || "—");
+    document.getElementById("p_sec").textContent = "Section : " + (sec || "—");
+    document.getElementById("p_batch").textContent = "Batch : " + (batch || "—");
+    document.getElementById("p_sem").textContent = "Semester : " + (sem || "—");
 
-    // Update section
-    const pSec = document.getElementById("p_sec");
-    pSec.textContent = sec || "—";
-
-    // Update student session
-    const pSsession = document.getElementById("p_ssession");
-    const studentSession = ssession || session;
-    pSsession.textContent = studentSession || "—";
+    // Update student dept & college
+    document.getElementById("p_sdept").textContent = sdept || "Department Of Business Administration";
+    document.getElementById("p_scollege").textContent = college || "Dhaka City College";
 
     // Update date
     const pDate = document.getElementById("p_date");
     if (date) {
         const dateObj = new Date(date);
-        const day = dateObj.getDate();
-        const months = ["January", "February", "March", "April", "May", "June",
-                        "July", "August", "September", "October", "November", "December"];
-        const month = months[dateObj.getMonth()];
-        const year = dateObj.getFullYear();
-        pDate.textContent = "Date of Submission: " + day + " " + month + " " + year;
-        pDate.classList.remove("placeholder");
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const formatted = dateObj.toLocaleDateString('en-US', options);
+        pDate.innerHTML = "Date Of Submission : " + formatted;
+        pDate.classList.add("filled");
     } else {
-        pDate.textContent = "Date of Submission: —";
-        pDate.classList.add("placeholder");
+        pDate.innerHTML = "<em>Date Of Submission : —</em>";
+        pDate.classList.remove("filled");
     }
-}
 
-// Helper: get trimmed value
-function val(id) {
-    const el = document.getElementById(id);
-    return el ? el.value.trim() : "";
-}
+    // Update font size
+    const coverPage = document.getElementById("coverPage");
+    coverPage.classList.remove("font-small", "font-medium", "font-large");
+    coverPage.classList.add("font-" + fontSize);
 
-// Helper: set text content
-function setText(id, text) {
-    const el = document.getElementById(id);
-    if (el) el.textContent = text;
-}
-
-// Update batch line
-function updateBatchLine(program, batch, sem, session) {
-    const container = document.getElementById("p_batch_line");
-    if (!container) return;
-
-    const prog = program || "BBA";
-    const b = batch || "__";
-    const s = sem || "__";
-    const sess = session || "__-__";
-
-    container.innerHTML = `<span class="bold-label">${prog}</span> BATCH – <span class="underline-text">${b}</span> Semester – <span class="underline-text">${s}</span> Session: ${sess}`;
+    // Update border
+    const coverBorder = document.getElementById("coverBorder");
+    coverBorder.classList.remove("single-border", "no-border");
+    if (borderStyle === "single") {
+        coverBorder.classList.add("single-border");
+    } else if (borderStyle === "none") {
+        coverBorder.classList.add("no-border");
+    }
 }
 
 // ============ CLEAR INDIVIDUAL FIELD ============
@@ -265,8 +232,8 @@ function clearField(id) {
     const el = document.getElementById(id);
     el.value = "";
     el.classList.remove("valid", "error");
-    el.style.borderColor = "";
 
+    // Close suggestions
     if (id === "f_subject") {
         closeSuggestions("subject_suggestions");
         document.getElementById("f_course").value = "";
@@ -275,26 +242,17 @@ function clearField(id) {
         closeSuggestions("teacher_suggestions");
         document.getElementById("f_designation").value = "";
     }
-    if (id === "f_course") {
-        // just clear
-    }
-    if (id === "f_topic") {
-        // just clear
-    }
 
     upd();
 }
 
 // ============ CLEAR ALL ============
 function clrAll() {
-    const allFields = [
-        "f_topic", "f_subject", "f_course",
-        "f_batch", "f_sem", "f_session",
-        "f_teacher", "f_sname", "f_roll", "f_sec", "f_ssession",
-        "f_date"
-    ];
+    clearCourse();
+    clearTeacher();
 
-    allFields.forEach(function(id) {
+    const fields = ["f_sname", "f_roll", "f_sec", "f_batch", "f_sem", "f_date", "f_topic"];
+    fields.forEach(function(id) {
         const e = document.getElementById(id);
         if (e) {
             e.value = "";
@@ -303,36 +261,41 @@ function clrAll() {
         }
     });
 
-    document.getElementById("f_designation").value = "";
-    document.getElementById("f_tdept").value = "Department of Business Administration";
-    document.getElementById("f_college").value = "Dhaka City College";
-    document.getElementById("f_dept_header").value = "Department of Business Administration";
-    document.getElementById("f_program").value = "BBA";
-
-    closeSuggestions("subject_suggestions");
-    closeSuggestions("teacher_suggestions");
+    document.getElementById("f_tdept").value = "Department Of Business Administration";
+    document.getElementById("f_sdept").value = "Department Of Business Administration";
 
     upd();
 }
 
+function clearCourse() {
+    document.getElementById("f_subject").value = "";
+    document.getElementById("f_course").value = "";
+    closeSuggestions("subject_suggestions");
+}
+
+function clearTeacher() {
+    document.getElementById("f_teacher").value = "";
+    document.getElementById("f_designation").value = "";
+    closeSuggestions("teacher_suggestions");
+}
+
 // ============ SUGGESTIONS ============
 function closeSuggestions(containerId) {
-    const el = document.getElementById(containerId);
-    if (el) el.innerHTML = "";
+    document.getElementById(containerId).innerHTML = "";
 }
 
 // Subject suggestions
 document.getElementById("f_subject").addEventListener("input", function() {
-    const v = this.value.trim().toLowerCase();
+    const val = this.value.trim().toLowerCase();
     const container = document.getElementById("subject_suggestions");
 
-    if (v.length < 1) {
+    if (val.length < 1) {
         container.innerHTML = "";
         return;
     }
 
     const matches = subjects.filter(s =>
-        s.name.toLowerCase().includes(v) || s.code.includes(v)
+        s.name.toLowerCase().includes(val) || s.code.includes(val)
     );
 
     if (matches.length === 0) {
@@ -342,7 +305,7 @@ document.getElementById("f_subject").addEventListener("input", function() {
 
     let html = '<div class="suggestions-list">';
     matches.forEach(s => {
-        html += `<div class="suggestion-item" onclick="selectSubject('${escapeQuotes(s.name)}', '${s.code}')">${s.name} <span style="color:#888;font-size:11px;">(${s.code})</span></div>`;
+        html += `<div class="suggestion-item" onclick="selectSubject('${s.name}', '${s.code}')">${s.name} <span style="color:#888;font-size:11px;">(${s.code})</span></div>`;
     });
     html += '</div>';
     container.innerHTML = html;
@@ -357,16 +320,16 @@ function selectSubject(name, code) {
 
 // Teacher suggestions
 document.getElementById("f_teacher").addEventListener("input", function() {
-    const v = this.value.trim().toLowerCase();
+    const val = this.value.trim().toLowerCase();
     const container = document.getElementById("teacher_suggestions");
 
-    if (v.length < 1) {
+    if (val.length < 1) {
         container.innerHTML = "";
         return;
     }
 
     const matches = teachers.filter(t =>
-        t.name.toLowerCase().includes(v)
+        t.name.toLowerCase().includes(val)
     );
 
     if (matches.length === 0) {
@@ -376,7 +339,7 @@ document.getElementById("f_teacher").addEventListener("input", function() {
 
     let html = '<div class="suggestions-list">';
     matches.forEach(t => {
-        html += `<div class="suggestion-item" onclick="selectTeacher('${escapeQuotes(t.name)}', '${escapeQuotes(t.designation)}')">${t.name} <span style="color:#888;font-size:11px;">(${t.designation})</span></div>`;
+        html += `<div class="suggestion-item" onclick="selectTeacher('${t.name}', '${t.designation}')">${t.name} <span style="color:#888;font-size:11px;">(${t.designation})</span></div>`;
     });
     html += '</div>';
     container.innerHTML = html;
@@ -387,11 +350,6 @@ function selectTeacher(name, designation) {
     document.getElementById("f_designation").value = designation;
     closeSuggestions("teacher_suggestions");
     upd();
-}
-
-// Escape quotes for onclick
-function escapeQuotes(str) {
-    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
 }
 
 // Close suggestions when clicking outside
@@ -413,39 +371,6 @@ function toggleAdvanced() {
     arrow.classList.toggle("rotated");
 }
 
-// ============ VALIDATION ============
-function validateRequired() {
-    const required = [
-        { id: "f_topic", label: "Assignment Topic" },
-        { id: "f_sname", label: "Student Name" },
-        { id: "f_roll", label: "Roll No" },
-        { id: "f_sec", label: "Section" },
-        { id: "f_batch", label: "Batch" },
-        { id: "f_sem", label: "Semester" },
-        { id: "f_session", label: "Session" },
-        { id: "f_date", label: "Date of Submission" }
-    ];
-
-    let valid = true;
-    let missing = [];
-
-    required.forEach(function(field) {
-        const el = document.getElementById(field.id);
-        const v = el.value.trim();
-        if (!v) {
-            markError(field.id);
-            missing.push(field.label);
-            valid = false;
-        }
-    });
-
-    if (!valid) {
-        alert("Please fill in the following required fields:\n• " + missing.join("\n• "));
-    }
-
-    return valid;
-}
-
 function markError(id) {
     const el = document.getElementById(id);
     el.style.borderColor = "#e53935";
@@ -457,44 +382,9 @@ function markError(id) {
     }, 3000);
 }
 
-// ============ DOWNLOAD PDF ============
-function downloadPDF() {
-    if (!validateRequired()) return;
-
-    const element = document.getElementById("coverPage");
-    const originalTransform = element.style.transform;
-    element.style.transform = "none";
-
-    const studentName = val("f_sname") || "Cover_Page";
-    const fileName = "DCC_" + studentName.replace(/\s+/g, "_") + ".pdf";
-
-    const opt = {
-        margin: 0,
-        filename: fileName,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 2,
-            useCORS: true,
-            allowTaint: true,
-            logging: false
-        },
-        jsPDF: {
-            unit: 'mm',
-            format: 'a4',
-            orientation: 'portrait'
-        }
-    };
-
-    html2pdf().set(opt).from(element).save().then(() => {
-        element.style.transform = originalTransform;
-    }).catch(() => {
-        element.style.transform = originalTransform;
-    });
-}
-
-// ============ DOWNLOAD PDF (MOBILE FIXED) ============
+// ============ DOWNLOAD PDF (MOBILE/DESKTOP FIXED) ============
 async function downloadPDF() {
-    // Validate required fields
+    // 1. Validation
     const sname = document.getElementById("f_sname").value.trim();
     const roll = document.getElementById("f_roll").value.trim();
     const sec = document.getElementById("f_sec").value.trim();
@@ -514,7 +404,7 @@ async function downloadPDF() {
         return;
     }
 
-    // Button loading state
+    // 2. Loading State
     const btn = document.getElementById("downloadBtn");
     const origText = btn.innerHTML;
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
@@ -522,18 +412,18 @@ async function downloadPDF() {
 
     const originalElement = document.getElementById("coverPage");
 
-    // FIX 1: Create an off-screen container at exactly top:0, left:0
-    // This stops mobile scroll positions from generating blank pages
+    // 3. FIX: Create an invisible off-screen container.
+    // This stops mobile scroll positions from cutting off the canvas
     const cloneContainer = document.createElement("div");
-    cloneContainer.style.position = "absolute";
+    cloneContainer.style.position = "fixed"; // Fixed positioning avoids scroll calculations
     cloneContainer.style.top = "0";
     cloneContainer.style.left = "0";
     cloneContainer.style.width = "595px";
     cloneContainer.style.height = "842px";
     cloneContainer.style.zIndex = "-9999"; 
-    cloneContainer.style.background = "#fff";
+    cloneContainer.style.background = "#ffffff";
 
-    // FIX 2: Clone the cover page to strip away the mobile live-preview "scale()" transforms
+    // 4. FIX: Clone the cover page to strip away the mobile live-preview "scale()" transforms
     const clone = originalElement.cloneNode(true);
     clone.style.transform = "none";
     clone.style.margin = "0";
@@ -541,15 +431,18 @@ async function downloadPDF() {
     cloneContainer.appendChild(clone);
     document.body.appendChild(cloneContainer);
 
+    const fileName = sname ? "DCC_" + sname.replace(/\s+/g, "_") + ".pdf" : "DCC_Cover_Page.pdf";
+
+    // 5. PDF Options
     const opt = {
         margin: 0,
-        filename: 'DCC_Cover_Page.pdf',
+        filename: fileName,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
             scale: 2,
-            useCORS: true,
+            useCORS: true,       // Critical for the Wikipedia Logo
             allowTaint: true,
-            scrollY: 0, // CRITICAL FIX: Ignores mobile scrolling
+            scrollY: 0,          // CRITICAL FIX: Ignores mobile scrolling
             scrollX: 0,
             windowWidth: 595,
             windowHeight: 842
@@ -561,12 +454,12 @@ async function downloadPDF() {
         }
     };
 
-    // Generate PDF from the pristine clone
+    // 6. Generate PDF from the pristine clone
     try {
         await html2pdf().set(opt).from(clone).save();
     } catch (error) {
         console.error("PDF generation failed:", error);
-        alert("An error occurred during download.");
+        alert("An error occurred during download. If you are on a strict mobile browser, use the 'Print' button to save as PDF.");
     } finally {
         // Clean up the clone and reset button
         document.body.removeChild(cloneContainer);
@@ -588,74 +481,67 @@ function printCover() {
             <title>DCC Cover Page</title>
             <style>
                 * { margin: 0; padding: 0; box-sizing: border-box; }
-                body {
-                    display: flex;
-                    justify-content: center;
-                    font-family: 'Times New Roman', Times, serif;
-                }
+                body { display: flex; justify-content: center; }
                 @page { size: A4; margin: 0; }
 
                 .cover-page {
                     width: 210mm;
                     min-height: 297mm;
                     background: #fff;
-                    padding: 40px 60px;
+                }
+
+                .cover-border {
+                    margin: 20px;
+                    padding: 30px 40px;
+                    min-height: calc(297mm - 40px);
+                    border: 3px double #1a1a2e;
                     display: flex;
                     flex-direction: column;
                     align-items: center;
-                    font-family: 'Times New Roman', Times, serif;
                 }
 
-                .cover-logo-top { margin-bottom: 16px; }
-                .college-logo { width: 80px; height: 80px; object-fit: contain; }
+                .cover-border.single-border { border: 2px solid #1a1a2e; }
+                .cover-border.no-border { border: none; }
 
                 .college-name {
-                    font-size: 22px;
+                    font-family: 'Times New Roman', serif;
+                    font-size: 28px;
                     font-weight: 700;
-                    color: #000;
-                    letter-spacing: 2px;
+                    color: #1a1a2e;
+                    letter-spacing: 4px;
                     text-align: center;
-                    margin-bottom: 8px;
+                    margin-bottom: 15px;
                     text-transform: uppercase;
                 }
 
-                .dept-name {
-                    font-size: 16px;
-                    font-weight: 700;
-                    color: #000;
+                .logo-container { margin-bottom: 20px; }
+                .college-logo { width: 100px; height: 100px; object-fit: contain; }
+
+                .cover-section {
                     text-align: center;
-                    margin-bottom: 24px;
-                    text-transform: uppercase;
+                    margin-bottom: 20px;
+                    width: 100%;
                 }
 
-                .cover-section { text-align: center; width: 100%; }
+                .cover-label-blue {
+                    color: #1565c0;
+                    font-size: 14px;
+                    font-weight: 700;
+                    margin-bottom: 4px;
+                }
 
-                .assignment-section { margin-bottom: 12px; }
-                .assignment-on-label { font-size: 15px; font-weight: 700; margin-bottom: 4px; font-style: italic; }
-                .assignment-topic { font-size: 14px; font-style: italic; }
+                .cover-label-blue.underline { text-decoration: underline; }
 
-                .course-section { margin-bottom: 8px; }
-                .course-line { font-size: 14px; line-height: 1.9; }
-                .bold-label { font-weight: 700; }
+                .cover-value {
+                    font-size: 13px;
+                    color: #333;
+                    line-height: 1.8;
+                }
 
-                .batch-section { margin-bottom: 30px; }
-                .batch-line { font-size: 14px; font-weight: 700; }
-                .underline-text { text-decoration: underline; }
-
-                .submitted-to-section { margin-bottom: 28px; margin-top: 10px; }
-                .section-heading { font-size: 20px; font-weight: 700; font-style: italic; margin-bottom: 8px; }
-                .teacher-name { font-size: 14px; margin-bottom: 2px; }
-                .teacher-info { font-size: 13px; line-height: 1.8; }
-
-                .submitted-by-section { margin-bottom: 20px; }
-                .student-name { font-size: 14px; margin-bottom: 4px; }
-                .student-info { font-size: 13px; line-height: 1.8; }
-
-                .date-section { margin-top: auto; padding-top: 30px; border-top: 1px solid #ccc; width: 80%; }
-                .date-line { font-size: 13px; font-style: italic; }
-
-                .empty-field { color: #bbb !important; font-style: italic !important; }
-                .placeholder { color: #aaa; }
+                .date-section {
+                    margin-top: auto;
+                    padding-top: 20px;
+                }
             </style>
         </head>
         <body>
@@ -682,10 +568,12 @@ function adjustZoom() {
 
     const wrapperWidth = wrapper.clientWidth;
     const pageWidth = 595;
-    let scale = Math.min((wrapperWidth - 40) / pageWidth, 1);
-    scale = Math.max(scale, 0.35);
+    
+    // Calculate scale factor (leaving some padding)
+    let scale = Math.min((wrapperWidth - 30) / pageWidth, 1);
+    scale = Math.max(scale, 0.40); // minimum scale limit
 
-    coverPage.style.transform = "scale(" + scale + ")";
+    coverPage.style.transform = `scale(${scale})`;
     coverPage.style.transformOrigin = "top center";
 
     if (zoomLabel) {
@@ -699,6 +587,7 @@ window.addEventListener("load", function() {
     adjustZoom();
 });
 
+// Debounce resize
 let resizeTimeout;
 window.addEventListener("resize", function() {
     clearTimeout(resizeTimeout);
