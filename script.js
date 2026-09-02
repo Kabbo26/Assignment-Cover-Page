@@ -21,7 +21,7 @@ const subjects = [
      // ============ 4th semester ============
     { name: "Risk Management & Insurance", code: "520129" },
     { name: "Business Statistics-II", code: "520131" },
-    { name: "Human Resource Management", code: "520133" }, 
+    { name: "Human Resource Management", code: "520133" },
     { name: "Export-Import Management", code: "520135" },
     { name: "Supply Chain Management", code: "520137" },
     // ============ 5th semester ============
@@ -513,68 +513,7 @@ document.getElementById('toggleBatchRow').addEventListener('change', function ()
 });
 
 // ============ PDF DOWNLOAD ============
-let pdfObjectUrl = null;   // blob: URL for the current PDF (non-iOS)
-let pdfBlob = null;        // keep the Blob so we can re-download anytime
-let pdfFilename = 'Cover.pdf';
-let pdfPreviewDataUrl = null; // JPEG preview (same pixels as the PDF page)
-
-function isIOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
-/**
- * Programmatic file download.
- * - Desktop/Android: createObjectURL + <a download> click
- * - iOS: download attribute is ignored for blobs — open a data URL
- *   so the system PDF viewer can Share / Save to Files
- */
-function triggerPdfDownload(blob, filename) {
-    if (!blob) {
-        alert('No PDF ready yet. Please generate it first.');
-        return;
-    }
-
-    if (isIOS()) {
-        const reader = new FileReader();
-        reader.onloadend = function () {
-            const dataUrl = reader.result;
-            const opened = window.open(dataUrl, '_blank');
-            if (!opened) {
-                // Popup blocked — last resort: navigate current tab
-                window.location.href = dataUrl;
-            }
-        };
-        reader.onerror = function () {
-            alert('Could not prepare the PDF for download. Please try again.');
-        };
-        reader.readAsDataURL(blob);
-        return;
-    }
-
-    // Revoke previous URL if any, then create a fresh one for this click
-    if (pdfObjectUrl) {
-        URL.revokeObjectURL(pdfObjectUrl);
-        pdfObjectUrl = null;
-    }
-    pdfObjectUrl = URL.createObjectURL(blob);
-
-    const a = document.createElement('a');
-    a.href = pdfObjectUrl;
-    a.download = filename || 'Cover.pdf';
-    a.rel = 'noopener';
-    a.style.display = 'none';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    // Do NOT revoke immediately — some browsers need a tick to start the download
-    // URL is revoked next time we generate or download
-}
-
-/** Called by the modal "Download" button (onClick). */
-function downloadGeneratedPdf() {
-    triggerPdfDownload(pdfBlob, pdfFilename);
-}
+let pdfObjectUrl = null; // tracks the current blob URL so we can release it
 
 async function downloadPDF() {
     const btn = document.getElementById('downloadBtn');
@@ -585,114 +524,106 @@ async function downloadPDF() {
     const element = document.getElementById('coverPage');
     const scrollContainer = document.getElementById('previewScroll');
 
-    // Snapshot current preview chrome so we can restore after capture
+    // Remember everything we're about to temporarily change so we can restore it
     const prevTransform = element.style.transform;
     const prevTransformOrigin = element.style.transformOrigin;
     const prevMarginBottom = element.style.marginBottom;
     const prevScrollTop = scrollContainer ? scrollContainer.scrollTop : 0;
 
     try {
+        // Make sure web fonts have finished loading before we snapshot the page
         if (document.fonts && document.fonts.ready) {
             await document.fonts.ready;
         }
 
-        // Capture at true size (no CSS scale / scroll offset)
+        // .a4-page normally lives inside a scrolled + zoomed preview
+        // (transform: scale + a negative margin-bottom to compensate for the
+        // zoom, plus overflow-y: auto on its parent). Capturing it as-is can
+        // produce a blank or mis-cropped render, so reset the zoom/scroll to
+        // show the page at true, full size before capturing.
         element.style.transform = 'none';
         element.style.transformOrigin = 'top left';
         element.style.marginBottom = '0';
         if (scrollContainer) scrollContainer.scrollTop = 0;
-        void element.offsetHeight; // force reflow
 
-        // Wait for images (logo etc.)
+        // Force the browser to apply the style changes above before we measure
+        // or capture anything.
+        void element.offsetHeight;
+
+        // Wait for every image inside the page (e.g. the logo) to actually
+        // finish loading — capturing before images are ready is another
+        // common cause of a blank/incomplete PDF.
         const images = Array.from(element.querySelectorAll('img'));
         await Promise.all(images.map(img => {
             if (img.complete && img.naturalWidth > 0) return Promise.resolve();
             return new Promise(resolve => {
                 img.onload = resolve;
-                img.onerror = resolve;
+                img.onerror = resolve; // don't block forever on a broken image
             });
         }));
 
+        // Rasterize the page ourselves with html2canvas (bundled and exposed
+        // globally by html2pdf.bundle.min.js), instead of going through
+        // html2pdf's own from()/toPdf() wrapper. This gives us the exact
+        // same image both for the on-screen preview AND the PDF, and lets us
+        // size the PDF page to match the image pixel-for-pixel, so there's
+        // never a mismatch or a stray extra page.
+        //
+        // windowWidth/windowHeight are set explicitly to the document's own
+        // logical size. Without this, html2canvas infers its internal
+        // render window from the *zoomed* viewport, and when the browser's
+        // native zoom (Ctrl +/-, pinch-zoom, etc.) isn't at 100%, that
+        // inference is wrong — producing a tiny, broken, or blank capture.
+        // Pinning these values keeps the capture correct at any zoom level.
         const canvas = await html2canvas(element, {
             scale: 2,
             useCORS: true,
-            allowTaint: false,
             logging: false,
             letterRendering: true,
             backgroundColor: '#ffffff',
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: element.scrollWidth,
-            windowHeight: element.scrollHeight,
+            windowWidth: document.documentElement.offsetWidth,
+            windowHeight: document.documentElement.offsetHeight,
         });
 
-        // JPEG preview — used BOTH on screen and inside the PDF
         const imgData = canvas.toDataURL('image/jpeg', 0.95);
-        pdfPreviewDataUrl = imgData;
 
-        const jsPDF = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
-        if (!jsPDF) {
-            throw new Error('jsPDF library not loaded');
-        }
-
-        // Page size in mm from canvas pixels (96dpi CSS px → mm at scale 2)
-        // Using mm avoids jsPDF "px" unit quirks across versions.
-        const pxToMm = 25.4 / 96;
-        const pdfWidth = (canvas.width * pxToMm) / 2;   // divide by scale
-        const pdfHeight = (canvas.height * pxToMm) / 2;
-
+        // Build a single-page PDF whose page size is exactly the canvas's
+        // own pixel dimensions, and draw the image to fill that same size.
+        // Because both numbers come from the same canvas, there is no
+        // unit-conversion mismatch — the previous version's blank-corner and
+        // stray-second-page bugs both came from the page size and the image
+        // size being computed differently.
+        const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
-            unit: 'mm',
-            format: [pdfWidth, pdfHeight],
-            orientation: pdfWidth > pdfHeight ? 'landscape' : 'portrait',
-            compress: true,
+            unit: 'px',
+            format: [canvas.width, canvas.height],
+            orientation: canvas.width > canvas.height ? 'landscape' : 'portrait',
         });
+        pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height, undefined, 'FAST');
+        const pdfBlob = pdf.output('blob');
 
-        pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
-        pdfBlob = pdf.output('blob');
-        pdfFilename = generateFilename();
-
-        // --- Preview modal: ALWAYS show the JPEG, never a PDF blob/iframe ---
-        const previewImg = document.getElementById('pdfPreviewImage');
-        if (previewImg) {
-            previewImg.src = imgData;
-            previewImg.alt = 'Cover page preview';
-            previewImg.style.display = 'block';
-            previewImg.style.maxWidth = '100%';
-            previewImg.style.height = 'auto';
+        if (pdfObjectUrl) {
+            URL.revokeObjectURL(pdfObjectUrl); // release the previous PDF, if any
         }
+        pdfObjectUrl = URL.createObjectURL(pdfBlob);
 
-        // Hide any iframe/embed that would show the blob-UUID "Open" UI on mobile
-        const previewFrame = document.getElementById('pdfPreviewFrame');
-        if (previewFrame) {
-            previewFrame.removeAttribute('src');
-            previewFrame.style.display = 'none';
-        }
-        const previewEmbed = document.getElementById('pdfPreviewEmbed');
-        if (previewEmbed) {
-            previewEmbed.removeAttribute('src');
-            previewEmbed.style.display = 'none';
-        }
+        // PDFs generally don't render inside an <iframe> on mobile browsers
+        // (and unreliably even on desktop), so preview the same image we
+        // just used to build the PDF instead — it's visually identical to
+        // the PDF page and works everywhere with no plugin required.
+        document.getElementById('pdfPreviewImage').src = imgData;
 
-        // Keep optional <a> in sync (if present), but download is driven by onClick
+        const filename = generateFilename();
         const previewDownloadLink = document.getElementById('pdfPreviewDownloadLink');
-        if (previewDownloadLink) {
-            if (pdfObjectUrl) URL.revokeObjectURL(pdfObjectUrl);
-            pdfObjectUrl = URL.createObjectURL(pdfBlob);
-            previewDownloadLink.href = pdfObjectUrl;
-            previewDownloadLink.download = pdfFilename;
-            // Prefer JS handler so mobile behaves correctly
-            previewDownloadLink.onclick = function (e) {
-                e.preventDefault();
-                downloadGeneratedPdf();
-            };
-        }
+        previewDownloadLink.href = pdfObjectUrl;
+        previewDownloadLink.download = filename;
 
         document.getElementById('pdfPreviewModal').classList.add('active');
     } catch (err) {
         console.error('PDF generation failed:', err);
         alert('PDF generation failed. Please try again.');
     } finally {
+        // Restore the preview to exactly how it was before we touched it
         element.style.transform = prevTransform;
         element.style.transformOrigin = prevTransformOrigin;
         element.style.marginBottom = prevMarginBottom;
